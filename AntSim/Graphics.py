@@ -33,9 +33,11 @@ class Graphics:
 
     def draw_sim(self):
         for colony in self.simulation.colonies:
-            pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 10)
+            pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
             for ant in colony.ants:
                 pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
+        for food_source in self.simulation.food_sources:
+            pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
 
     def clear(self):
         self.screen.fill((255, 255, 255))

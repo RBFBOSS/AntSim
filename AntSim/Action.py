@@ -6,3 +6,4 @@ class Action(Enum):
     FOOD = 1
     COLONY = 2
     FIGHT = 3
+    PATROL = 4

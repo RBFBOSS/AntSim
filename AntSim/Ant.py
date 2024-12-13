@@ -1,3 +1,5 @@
+import random
+
 from Action import Action
 
 
@@ -28,11 +30,40 @@ class Ant:
         # Implement the logic to drop a pheromone of the given type
         pass
 
-    def move(self, x: bool, y: bool) -> None:
-        # Implement the logic to move the ant based on x and y directions
-        pass
+    def move(self) -> None:
+        if self.destination == Action.IDLE:
+            return
+        elif self.destination == Action.FOOD:
+            self.move_towards_food()
+        elif self.destination == Action.COLONY:
+            self.move_towards_colony()
+        elif self.destination == Action.FIGHT:
+            self.move_towards_enemy()
+        elif self.destination == Action.PATROL:
+            self.patrol()
+        r = random.randint(0, 2)
+        if r == 0:
+            self.x += 1
+        elif r == 1:
+            self.x -= 1
+
+        r = random.randint(0, 2)
+        if r == 0:
+            self.y += 1
+        elif r == 1:
+            self.y -= 1
 
     def update(self):
-        # Implement the logic to update the ant based on its state
-        self.x += 1
-        self.y += 1
+        self.move()
+
+    def move_towards_food(self):
+        pass
+
+    def move_towards_colony(self):
+        pass
+
+    def move_towards_enemy(self):
+        pass
+
+    def patrol(self):
+        pass
