@@ -1,0 +1,55 @@
+===CLASE===
+
+1) Colony
+	
+	-> array of ants
+	-> int food_supply
+	-> int food_supply size (to be considered)
+	-> int health (in caz ca e atacata)
+	-> int ant_production (how many ants are generated/min)
+	-> int ant_production_ratio (chance of warrior/worker ants spawning)
+	-> boundaries (if invaders are found here, they are to be attacked)
+
+2) Ant (interfata)
+	-> bool is_carrying_food
+	-> int health
+	-> int destination (where is the ant going: home/food/fight)
+	-> int attack (how hard does the ant hit)
+	-> int, int position
+	-> int heading (which direction was it heading on the last movement)
+	-> int state (idle, gathering food, patroling borders, conquering, attacking)
+	-> Colony colony (the home colony of the ant)
+
+	- int max_health()
+	- void drop_pheromone(int pheromone_type)
+	- void move(bool x, bool y)
+
+3) Worker
+	* can carry more food
+	* is cheaper
+	* can take care of farms
+
+4) Soldier
+	* has greater attack and health
+	* maybe can only follow intruder and home markers and can't harvest any resource
+
+5) Queen (to be considered)
+	* requires lots of food to produce ants
+
+
+
+Ideas:
+	-> Matrix of pheromones that coveres the entire map(to be considered)
+		-> intruder
+		-> food
+		-> way home
+	
+	-> Farms as another way of gathering food
+
+	-> War tactics in ants:
+		-> if enemies are very close to the colony, ants fight to the death
+		-> if enemies are far from colony, injured ants return to heal
+	
+	-> Food appears on map and it is finite (no infinite food source)
+
+	-> Statistics and charts about colony size and stuff
