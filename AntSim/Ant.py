@@ -13,7 +13,7 @@ class Ant:
                  heading_y: int,
                  state: int,
                  colony_id: int,
-                 speed: int):
+                 speed: float):
         self.is_carrying_food = False
         self.speed = speed
         self.max_health = max_health
@@ -34,24 +34,27 @@ class Ant:
         # Implement the logic to drop a pheromone of the given type
         pass
 
+    def move_randomly(self) -> None:
+        r = random.randint(0, 2)
+        self.heading_x = 0
+        self.heading_y = 0
+        if r == 0:
+            self.x += self.speed
+            self.heading_x = 1
+        elif r == 1:
+            self.x -= self.speed
+            self.heading_x = -1
+        r = random.randint(0, 2)
+        if r == 0:
+            self.y += self.speed
+            self.heading_y = 1
+        elif r == 1:
+            self.y -= self.speed
+            self.heading_y = -1
+
     def move(self) -> None:
         if self.destination == Action.IDLE:
-            r = random.randint(0, 2)
-            self.heading_x = 0
-            self.heading_y = 0
-            if r == 0:
-                self.x += self.speed
-                self.heading_x = 1
-            elif r == 1:
-                self.x -= self.speed
-                self.heading_x = -1
-            r = random.randint(0, 2)
-            if r == 0:
-                self.y += self.speed
-                self.heading_y = 1
-            elif r == 1:
-                self.y -= self.speed
-                self.heading_y = -1
+            self.move_randomly()
         elif self.destination == Action.FOOD:
             self.move_towards_food()
         elif self.destination == Action.COLONY:
