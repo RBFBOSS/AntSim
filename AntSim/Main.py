@@ -5,10 +5,10 @@ sim = Simulation()
 sim.add_colony(500, 200)
 sim.add_colony(200, 500)
 col = sim.get_colony(0)
-for _ in range(1000):
+for _ in range(2500):
     col.produce_ant('worker')
 col1 = sim.get_colony(1)
-for _ in range(1000):
-    col1.produce_ant('worker')
+for _ in range(2500):
+    col1.produce_ant('soldier')
 sim.add_food_source(300, 300)
 graphics = Graphics(sim)

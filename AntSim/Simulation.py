@@ -6,9 +6,10 @@ class Simulation:
     def __init__(self):
         self.colonies = []
         self.food_sources = []
+        self.speed = 2
 
     def add_colony(self, x: int, y: int) -> None:
-        self.colonies.append(Colony(len(self.colonies), x, y))
+        self.colonies.append(Colony(len(self.colonies), x, y, self.speed))
 
     def get_colony(self, colony_id: int) -> Colony:
         return self.colonies[colony_id]

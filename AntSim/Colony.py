@@ -4,8 +4,9 @@ from Soldier import Soldier
 
 
 class Colony:
-    def __init__(self, colony_id, x: int, y: int):
+    def __init__(self, colony_id, x: int, y: int, speed: int):
         self.colony_id = colony_id
+        self.speed = speed
         self.ants = []
         self.food_supply = 0
         self.food_supply_size = 1000
@@ -15,12 +16,21 @@ class Colony:
         self.x = x
         self.y = y
         self.boundary_radius = 100
+        self.updates = 0
 
     def produce_ant(self, ant_type) -> None:
         if ant_type.lower() == 'worker':
-            self.ants.append(Worker(Action.IDLE, 10, self.x, self.y, 0, 0, self.colony_id))
+            self.ants.append(Worker(Action.IDLE,10,
+                                    self.x, self.y,
+                                    0,0,
+                                    0, self.colony_id,
+                                    self.speed))
         else:
-            self.ants.append(Soldier(Action.IDLE, 20, self.x, self.y, 0, 0, self.colony_id))
+            self.ants.append(Soldier(Action.IDLE, 20,
+                                     self.x, self.y,
+                                     0, 0,
+                                     0, self.colony_id,
+                                     self.speed))
 
     def print_ants(self):
         for ant in self.ants:
@@ -36,3 +46,6 @@ class Colony:
     def update(self):
         for ant in self.ants:
             ant.update()
+        self.updates += 1
+        if not self.updates % 10:
+            print(f'Colony {self.colony_id} updated')

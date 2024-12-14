@@ -1,6 +1,9 @@
 import pygame
 import sys
 
+from Soldier import Soldier
+from Worker import Worker
+
 
 def quit_graphics():
     pygame.quit()
@@ -35,7 +38,14 @@ class Graphics:
         for colony in self.simulation.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
             for ant in colony.ants:
-                pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
+                if isinstance(ant, Worker):
+                    pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
+                    pygame.draw.circle(self.screen, (0, 0, 0),
+                                       (ant.x + 5 * ant.heading_x, ant.y + 5 * ant.heading_y), 5)
+                elif isinstance(ant, Soldier):
+                    pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 6)
+                    pygame.draw.circle(self.screen, (0, 0, 0),
+                                       (ant.x + 6 * ant.heading_x, ant.y + 6 * ant.heading_y), 6)
         for food_source in self.simulation.food_sources:
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
 
