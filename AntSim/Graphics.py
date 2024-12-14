@@ -17,7 +17,7 @@ def update():
 class Graphics:
     def __init__(self, simulation):
         pygame.init()
-        self.screen = pygame.display.set_mode((1520, 900))
+        self.screen = pygame.display.set_mode((simulation.width, simulation.height))
         self.simulation = simulation
         pygame.display.set_caption("AntSim")
         self.run()
@@ -43,9 +43,9 @@ class Graphics:
                     pygame.draw.circle(self.screen, (0, 0, 0),
                                        (ant.x + 5 * ant.heading_x, ant.y + 5 * ant.heading_y), 5)
                 elif isinstance(ant, Soldier):
-                    pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 6)
+                    pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 7)
                     pygame.draw.circle(self.screen, (0, 0, 0),
-                                       (ant.x + 6 * ant.heading_x, ant.y + 6 * ant.heading_y), 6)
+                                       (ant.x + 7 * ant.heading_x, ant.y + 7 * ant.heading_y), 7)
         for food_source in self.simulation.food_sources:
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
 

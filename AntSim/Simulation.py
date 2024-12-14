@@ -1,25 +1,48 @@
 from Colony import Colony
 from FoodSource import FoodSource
+from Globals import Globals
 
 
 class Simulation:
-    def __init__(self):
+    def __init__(self, width: int, height: int):
         self.colonies = []
         self.food_sources = []
-        self.speed = 2
+        self.speed = 1
+        self.exploration_rate = 0.01
+        self.width = width
+        self.height = height
+        self.matrix = [[None for _ in range(width)] for _ in range(height)]
+        self.ants_FOV = 10
+        self.update_count = 0
+        self.pheromones = []
 
-    def add_colony(self, x: int, y: int) -> None:
-        self.colonies.append(Colony(len(self.colonies), x, y, self.speed))
+    def add_colony(self, y: int, x: int) -> None:
+        self.colonies.append(Colony(len(self.colonies),
+                                    y, x, self.speed,
+                                    self.exploration_rate,
+                                    self.ants_FOV, self.matrix,
+                                    self.pheromones))
 
     def get_colony(self, colony_id: int) -> Colony:
         return self.colonies[colony_id]
 
-    def add_food_source(self, x: int, y: int) -> None:
-        self.food_sources.append(FoodSource(len(self.food_sources), x, y))
+    def add_food_source(self, y: int, x: int) -> None:
+        self.food_sources.append(FoodSource(len(self.food_sources), y, x))
 
     def get_food_source(self, food_source_id: int) -> FoodSource:
         return self.food_sources[food_source_id]
 
     def update(self):
+        Globals.increment_time_frame()
         for colony in self.colonies:
             colony.update()
+        self.update_count += 1
+        if self.update_count >= 20:
+            self.delete_old_pheromones()
+            self.update_count = 0
+
+    def delete_old_pheromones(self):
+        for i in range(len(self.pheromones)):
+            if (self.pheromones[i].creation_time + 1000000 <
+                    Globals.global_time_frame):
+                self.pheromones[i].clear()
