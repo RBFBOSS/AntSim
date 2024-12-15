@@ -41,46 +41,63 @@ class Ant(ABC):
         self.time_of_last_visit = Globals.global_time_frame
         self.pheromones = pheromones
         self.pheromone_drop_count = 0
-        self.last_pheromone_time_target_observed = 0
+        self.last_pheromone_intensity = 0
+        self.times_pheromone_not_dropped = 0
 
     def max_health(self) -> int:
         return self.max_health
 
     def find_spot_for_drop(self):
         if self.matrix[self.y][self.x]:
-            if self.matrix[self.y][self.x].m_type == MarkerType.PHEROMONE:
+            if self.matrix[self.y][self.x].m_type == MarkerType.PHEROMONE and \
+                    self.times_pheromone_not_dropped > 10:
+                self.times_pheromone_not_dropped = 0
                 return self.x, self.y
         else:
+            self.times_pheromone_not_dropped = 0
             return self.x, self.y
 
         if self.x + 1 < 1515:
             if self.matrix[self.y][self.x + 1]:
-                if self.matrix[self.y][self.x + 1].m_type == MarkerType.PHEROMONE:
+                if self.matrix[self.y][self.x + 1].m_type == MarkerType.PHEROMONE and \
+                        self.times_pheromone_not_dropped > 10:
+                    self.times_pheromone_not_dropped = 0
                     return self.x + 1, self.y
             else:
+                self.times_pheromone_not_dropped = 0
                 return self.x + 1, self.y
 
         if self.x - 1 > 5:
             if self.matrix[self.y][self.x - 1]:
-                if self.matrix[self.y][self.x - 1].m_type == MarkerType.PHEROMONE:
+                if self.matrix[self.y][self.x - 1].m_type == MarkerType.PHEROMONE and \
+                        self.times_pheromone_not_dropped > 10:
+                    self.times_pheromone_not_dropped = 0
                     return self.x - 1, self.y
             else:
+                self.times_pheromone_not_dropped = 0
                 return self.x - 1, self.y
 
         if self.y + 1 < 890:
             if self.matrix[self.y + 1][self.x]:
-                if self.matrix[self.y + 1][self.x].m_type == MarkerType.PHEROMONE:
+                if self.matrix[self.y + 1][self.x].m_type == MarkerType.PHEROMONE and \
+                        self.times_pheromone_not_dropped > 10:
+                    self.times_pheromone_not_dropped = 0
                     return self.x, self.y + 1
             else:
+                self.times_pheromone_not_dropped = 0
                 return self.x, self.y + 1
 
         if self.y - 1 > 5:
             if self.matrix[self.y - 1][self.x]:
-                if self.matrix[self.y - 1][self.x].m_type == MarkerType.PHEROMONE:
+                if self.matrix[self.y - 1][self.x].m_type == MarkerType.PHEROMONE and \
+                        self.times_pheromone_not_dropped > 10:
+                    self.times_pheromone_not_dropped = 0
                     return self.x, self.y - 1
             else:
+                self.times_pheromone_not_dropped = 0
                 return self.x, self.y - 1
 
+        self.times_pheromone_not_dropped += 1
         return -1, -1
 
     def drop_pheromone(self) -> None:

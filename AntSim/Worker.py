@@ -36,7 +36,7 @@ class Worker(Ant):
                         if self.matrix[i][j].m_type == MarkerType.FOOD:
                             food_in_reach = True
                             self.last_visited_object = self.matrix[i][j]
-                            self.last_pheromone_time_target_observed = (
+                            self.last_pheromone_intensity = (
                                     Globals.global_time_frame + 100)
                             break
             if food_in_reach:
@@ -55,7 +55,7 @@ class Worker(Ant):
                                 and self.matrix[i][j].creator == self.colony_id:
                             colony_in_reach = True
                             self.last_visited_object = self.matrix[i][j]
-                            self.last_pheromone_time_target_observed = (
+                            self.last_pheromone_intensity = (
                                     Globals.global_time_frame + 100)
                             break
             if colony_in_reach:
@@ -96,21 +96,23 @@ class Worker(Ant):
                                 (self.matrix[i][j].target == PheromoneType.TO_COLONY
                                  and self.destination == Action.COLONY):
                             if object_sighted is not None:
-                                if self.last_pheromone_time_target_observed > \
-                                        self.matrix[i][j].time_target_observed:
-                                    if (object_sighted.time_target_observed <
-                                            self.matrix[i][j].time_target_observed):
+                                if self.last_pheromone_intensity > \
+                                        Globals.global_time_frame - self.matrix[i][j].time_target_observed:
+                                    if (Globals.global_time_frame - object_sighted.time_target_observed >
+                                            Globals.global_time_frame - self.matrix[i][j].time_target_observed):
                                         object_sighted = self.matrix[i][j]
                                         object_i = i
                                         object_j = j
-                                        self.last_pheromone_time_target_observed = \
-                                            object_sighted.time_target_observed
+                                        self.last_pheromone_intensity = \
+                                            Globals.global_time_frame - object_sighted.time_target_observed
                             else:
-                                if self.last_pheromone_time_target_observed > \
-                                        self.matrix[i][j].time_target_observed:
+                                if self.last_pheromone_intensity > \
+                                        Globals.global_time_frame - self.matrix[i][j].time_target_observed:
                                     object_sighted = self.matrix[i][j]
                                     object_i = i
                                     object_j = j
+                                    self.last_pheromone_intensity = \
+                                        Globals.global_time_frame - object_sighted.time_target_observed
                     # elif self.matrix[i][j].m_type == MarkerType.ANT:
                     #     object_sighted = self.matrix[i][j]
         return object_sighted, object_i, object_j
