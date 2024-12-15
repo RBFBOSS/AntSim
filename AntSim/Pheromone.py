@@ -1,8 +1,8 @@
 class Pheromone:
-    def __init__(self, x, y, matrix, target, creator, time_target_observed, creation_time):
+    def __init__(self, x, y, matrix, target, creator, distance, creation_time):
         self.target = target
         self.creator = creator
-        self.time_target_observed = time_target_observed
+        self.distance = distance
         self.creation_time = creation_time
         self.x = x
         self.y = y

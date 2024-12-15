@@ -41,7 +41,7 @@ class Ant(ABC):
         self.time_of_last_visit = Globals.global_time_frame
         self.pheromones = pheromones
         self.pheromone_drop_count = 0
-        self.last_pheromone_intensity = -1
+        self.last_pheromone_distance = -1
         self.times_pheromone_not_dropped = 0
 
     def max_health(self) -> int:
@@ -108,7 +108,7 @@ class Ant(ABC):
             self.matrix[placement_y][placement_x] = Marker(MarkerType.PHEROMONE,
                                                            PheromoneType.TO_FOOD,
                                                            self.colony_id,
-                                                           self.time_of_last_visit,
+                                                           Globals.global_time_frame - self.time_of_last_visit,
                                                            Globals.global_time_frame)
             self.pheromones.append(Pheromone(placement_x, placement_y, self.matrix,
                                              PheromoneType.TO_FOOD, self.colony_id,
@@ -124,7 +124,7 @@ class Ant(ABC):
             self.matrix[placement_y][placement_x] = Marker(MarkerType.PHEROMONE,
                                                            PheromoneType.TO_COLONY,
                                                            self.colony_id,
-                                                           self.time_of_last_visit,
+                                                           Globals.global_time_frame - self.time_of_last_visit,
                                                            Globals.global_time_frame)
             self.pheromones.append(Pheromone(placement_x, placement_y, self.matrix,
                                              PheromoneType.TO_COLONY, self.colony_id,
@@ -181,6 +181,12 @@ class Ant(ABC):
         self.perform_movement()
 
     def perform_movement(self) -> None:
+        if self.heading_x == 0 and self.heading_y == 0:
+            self.heading_x = random.choice([-1, 0, 1])
+            if self.heading_x == 0:
+                self.heading_y = random.choice([-1, 1])
+            else:
+                self.heading_y = random.choice([-1, 0, 1])
         if self.x >= 1518:
             self.heading_x = -1
         elif self.x <= 2:

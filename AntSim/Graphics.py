@@ -3,6 +3,7 @@ from time import sleep
 import pygame
 import sys
 
+from Globals import Globals
 from PheromoneType import PheromoneType
 from Soldier import Soldier
 from Worker import Worker
@@ -35,7 +36,7 @@ class Graphics:
             self.draw_sim()
             self.sim_update()
             update()
-            sleep(0.01)
+            # sleep(0.01)
         quit()
 
     def draw_sim(self):
@@ -50,7 +51,9 @@ class Graphics:
         for colony in self.simulation.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
             for ant in colony.ants:
-                pygame.draw.rect(self.screen, (0, 0, 0), (ant.x, ant.y, 10, 10), 1)
+                pygame.draw.rect(self.screen, (0, 0, 0),
+                                 (ant.x - Globals.ants_FOV/2, ant.y - Globals.ants_FOV/2,
+                                  Globals.ants_FOV, Globals.ants_FOV), 1)
                 if isinstance(ant, Worker):
                     pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
                     pygame.draw.circle(self.screen, (0, 0, 0),

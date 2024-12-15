@@ -12,7 +12,7 @@ class Simulation:
         self.width = width
         self.height = height
         self.matrix = [[None for _ in range(width)] for _ in range(height)]
-        self.ants_FOV = 20
+        self.ants_FOV = Globals.ants_FOV
         self.update_count = 0
         self.pheromones = []
 
@@ -37,14 +37,14 @@ class Simulation:
         for colony in self.colonies:
             colony.update()
         self.update_count += 1
-        if self.update_count >= 20:
+        if self.update_count >= Globals.update_pheromones_count:
             self.delete_old_pheromones()
             self.update_count = 0
 
     def delete_old_pheromones(self):
         i = 0
         while i < len(self.pheromones):
-            if (self.pheromones[i].creation_time + 50 <
+            if (self.pheromones[i].creation_time + Globals.pheromone_lifespan <
                     Globals.global_time_frame):
                 self.pheromones[i].clear()
                 self.pheromones.pop(i)
