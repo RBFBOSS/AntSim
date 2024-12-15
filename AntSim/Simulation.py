@@ -8,7 +8,7 @@ class Simulation:
         self.colonies = []
         self.food_sources = []
         self.speed = 1
-        self.exploration_rate = 0.01
+        self.exploration_rate = 0.05
         self.width = width
         self.height = height
         self.matrix = [[None for _ in range(width)] for _ in range(height)]
@@ -16,9 +16,9 @@ class Simulation:
         self.update_count = 0
         self.pheromones = []
 
-    def add_colony(self, y: int, x: int) -> None:
+    def add_colony(self, x: int, y: int) -> None:
         self.colonies.append(Colony(len(self.colonies),
-                                    y, x, self.speed,
+                                    x, y, self.speed,
                                     self.exploration_rate,
                                     self.ants_FOV, self.matrix,
                                     self.pheromones))
@@ -27,7 +27,7 @@ class Simulation:
         return self.colonies[colony_id]
 
     def add_food_source(self, y: int, x: int) -> None:
-        self.food_sources.append(FoodSource(len(self.food_sources), y, x))
+        self.food_sources.append(FoodSource(len(self.food_sources), y, x, self.matrix))
 
     def get_food_source(self, food_source_id: int) -> FoodSource:
         return self.food_sources[food_source_id]
@@ -42,7 +42,11 @@ class Simulation:
             self.update_count = 0
 
     def delete_old_pheromones(self):
-        for i in range(len(self.pheromones)):
-            if (self.pheromones[i].creation_time + 1000000 <
+        i = 0
+        while i < len(self.pheromones):
+            if (self.pheromones[i].creation_time + 50 <
                     Globals.global_time_frame):
                 self.pheromones[i].clear()
+                self.pheromones.pop(i)
+            else:
+                i += 1

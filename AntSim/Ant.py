@@ -37,45 +37,46 @@ class Ant(ABC):
         self.colony_id = colony_id
         self.ant_FOV = ant_FOV
         self.matrix = matrix
-        self.last_visited_object = self.matrix[x][y]
+        self.last_visited_object = self.matrix[y][x]
         self.time_of_last_visit = Globals.global_time_frame
         self.pheromones = pheromones
         self.pheromone_drop_count = 0
+        self.last_pheromone_time_target_observed = 0
 
     def max_health(self) -> int:
         return self.max_health
 
     def find_spot_for_drop(self):
-        if self.matrix[self.x][self.y]:
-            if self.matrix[self.x][self.y].m_type == MarkerType.PHEROMONE:
+        if self.matrix[self.y][self.x]:
+            if self.matrix[self.y][self.x].m_type == MarkerType.PHEROMONE:
                 return self.x, self.y
         else:
             return self.x, self.y
 
-        if self.x + 1 < 1519:
-            if self.matrix[self.x + 1][self.y]:
-                if self.matrix[self.x + 1][self.y].m_type == MarkerType.PHEROMONE:
+        if self.x + 1 < 1515:
+            if self.matrix[self.y][self.x + 1]:
+                if self.matrix[self.y][self.x + 1].m_type == MarkerType.PHEROMONE:
                     return self.x + 1, self.y
             else:
                 return self.x + 1, self.y
 
-        if self.x - 1 > 0:
-            if self.matrix[self.x - 1][self.y]:
-                if self.matrix[self.x - 1][self.y].m_type == MarkerType.PHEROMONE:
+        if self.x - 1 > 5:
+            if self.matrix[self.y][self.x - 1]:
+                if self.matrix[self.y][self.x - 1].m_type == MarkerType.PHEROMONE:
                     return self.x - 1, self.y
             else:
                 return self.x - 1, self.y
 
-        if self.y + 1 < 900:
-            if self.matrix[self.x][self.y + 1]:
-                if self.matrix[self.x][self.y + 1].m_type == MarkerType.PHEROMONE:
+        if self.y + 1 < 890:
+            if self.matrix[self.y + 1][self.x]:
+                if self.matrix[self.y + 1][self.x].m_type == MarkerType.PHEROMONE:
                     return self.x, self.y + 1
             else:
                 return self.x, self.y + 1
 
-        if self.y - 1 > 0:
-            if self.matrix[self.x][self.y - 1]:
-                if self.matrix[self.x][self.y - 1].m_type == MarkerType.PHEROMONE:
+        if self.y - 1 > 5:
+            if self.matrix[self.y - 1][self.x]:
+                if self.matrix[self.y - 1][self.x].m_type == MarkerType.PHEROMONE:
                     return self.x, self.y - 1
             else:
                 return self.x, self.y - 1
@@ -85,12 +86,15 @@ class Ant(ABC):
     def drop_pheromone(self) -> None:
         if self.last_visited_object.m_type == MarkerType.FOOD:
             placement_x, placement_y = self.find_spot_for_drop()
-            self.matrix[placement_x][placement_y] = Marker(MarkerType.PHEROMONE,
+            if placement_x == -1 or placement_y == -1:
+                return
+            self.matrix[placement_y][placement_x] = Marker(MarkerType.PHEROMONE,
                                                            PheromoneType.TO_FOOD,
                                                            self.colony_id,
                                                            self.time_of_last_visit,
                                                            Globals.global_time_frame)
-            self.pheromones.append(Pheromone(PheromoneType.TO_FOOD, self.colony_id,
+            self.pheromones.append(Pheromone(placement_x, placement_y, self.matrix,
+                                             PheromoneType.TO_FOOD, self.colony_id,
                                              self.time_of_last_visit,
                                              Globals.global_time_frame))
             if placement_x == -1 or placement_y == -1:
@@ -100,12 +104,13 @@ class Ant(ABC):
             placement_x, placement_y = self.find_spot_for_drop()
             if placement_x == -1 or placement_y == -1:
                 return
-            self.matrix[placement_x][placement_y] = Marker(MarkerType.PHEROMONE,
+            self.matrix[placement_y][placement_x] = Marker(MarkerType.PHEROMONE,
                                                            PheromoneType.TO_COLONY,
                                                            self.colony_id,
                                                            self.time_of_last_visit,
                                                            Globals.global_time_frame)
-            self.pheromones.append(Pheromone(PheromoneType.TO_COLONY, self.colony_id,
+            self.pheromones.append(Pheromone(placement_x, placement_y, self.matrix,
+                                             PheromoneType.TO_COLONY, self.colony_id,
                                              self.time_of_last_visit,
                                              Globals.global_time_frame))
 
@@ -159,9 +164,9 @@ class Ant(ABC):
         self.perform_movement()
 
     def perform_movement(self) -> None:
-        if self.x >= 1520:
+        if self.x >= 1518:
             self.heading_x = -1
-        elif self.x <= 0:
+        elif self.x <= 2:
             self.heading_x = 1
         if self.y >= 890:
             self.heading_y = -1
@@ -193,22 +198,22 @@ class Ant(ABC):
         pass
 
     def update(self):
-        object_sighted, x, y = self.object_sighted()
+        object_sighted, y, x = self.object_sighted()
         self.pheromone_drop_count += 1
-        if self.pheromone_drop_count >= 5:
+        if self.pheromone_drop_count >= 10:
             self.drop_pheromone()
             self.pheromone_drop_count = 0
         self.move(object_sighted, x, y)
         self.perform_action()
         placement_x, placement_y = self.find_spot_for_drop()
         if placement_x != -1 and placement_y != -1:
-            self.matrix[placement_x][placement_y] = Marker(MarkerType.ANT, None,
+            self.matrix[placement_y][placement_x] = Marker(MarkerType.ANT, None,
                                                            self.colony_id,
                                                            Globals.global_time_frame,
                                                            Globals.global_time_frame)
 
     def move_towards_objective(self, object_sighted, x, y):
-        if not object_sighted:
+        if object_sighted is None:
             self.move_to_explore()
             return
         self.turn_towards(x, y)

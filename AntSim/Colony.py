@@ -28,7 +28,7 @@ class Colony:
         self.nr_of_soldiers = 0
         self.ants_FOV = ants_FOV
         self.matrix = matrix
-        self.matrix[x][y] = Marker(MarkerType.COLONY,
+        self.matrix[y][x] = Marker(MarkerType.COLONY,
                                    None, self.colony_id,
                                    0, 0)
         self.pheromones = pheromones

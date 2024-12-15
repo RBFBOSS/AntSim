@@ -1,6 +1,9 @@
+from time import sleep
+
 import pygame
 import sys
 
+from PheromoneType import PheromoneType
 from Soldier import Soldier
 from Worker import Worker
 
@@ -32,9 +35,17 @@ class Graphics:
             self.draw_sim()
             self.sim_update()
             update()
+            # sleep(0.01)
         quit()
 
     def draw_sim(self):
+        for pheromone in self.simulation.pheromones:
+            if pheromone.target == PheromoneType.TO_COLONY:
+                pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 5)
+            else:
+                pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 5)
+        for food_source in self.simulation.food_sources:
+            pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
         for colony in self.simulation.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
             for ant in colony.ants:
@@ -46,8 +57,6 @@ class Graphics:
                     pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 7)
                     pygame.draw.circle(self.screen, (0, 0, 0),
                                        (ant.x + 7 * ant.heading_x, ant.y + 7 * ant.heading_y), 7)
-        for food_source in self.simulation.food_sources:
-            pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
 
     def clear(self):
         self.screen.fill((255, 255, 255))

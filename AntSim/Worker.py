@@ -35,10 +35,16 @@ class Worker(Ant):
                     if self.matrix[i][j]:
                         if self.matrix[i][j].m_type == MarkerType.FOOD:
                             food_in_reach = True
+                            self.last_visited_object = self.matrix[i][j]
+                            self.last_pheromone_time_target_observed = (
+                                    Globals.global_time_frame + 100)
                             break
             if food_in_reach:
                 self.is_carrying_food = True
                 self.destination = Action.COLONY
+                self.heading_y = -self.heading_y
+                self.heading_x = -self.heading_x
+                print("Worker got food")
 
         if self.destination == Action.COLONY:
             colony_in_reach = False
@@ -48,17 +54,25 @@ class Worker(Ant):
                         if self.matrix[i][j].m_type == MarkerType.COLONY\
                                 and self.matrix[i][j].creator == self.colony_id:
                             colony_in_reach = True
+                            self.last_visited_object = self.matrix[i][j]
+                            self.last_pheromone_time_target_observed = (
+                                    Globals.global_time_frame + 100)
                             break
             if colony_in_reach:
                 self.is_carrying_food = False
                 self.destination = Action.FOOD
+                self.heading_y = -self.heading_y
+                self.heading_x = -self.heading_x
+                print("Worker has returned to colony")
 
     def object_sighted(self):
         above = int(max(0, self.y - self.ant_FOV))
         below = int(min(899, self.y + self.ant_FOV))
         left = int(max(0, self.x - self.ant_FOV))
         right = int(min(1519, self.x + self.ant_FOV))
-        object_sighted = False
+        object_sighted = None
+        object_i = -1
+        object_j = -1
 
         for i in range(above, below):
             for j in range(left, right):
@@ -81,20 +95,29 @@ class Worker(Ant):
                             and self.destination == Action.FOOD) or \
                                 (self.matrix[i][j].target == PheromoneType.TO_COLONY
                                  and self.destination == Action.COLONY):
-                            if object_sighted:
-                                if (self.object_sighted().time_target_observed <
-                                        self.matrix[i][j].time_target_observed):
-                                    object_sighted = self.matrix[i][j]
+                            if object_sighted is not None:
+                                if self.last_pheromone_time_target_observed > \
+                                        self.matrix[i][j].time_target_observed:
+                                    if (object_sighted.time_target_observed <
+                                            self.matrix[i][j].time_target_observed):
+                                        object_sighted = self.matrix[i][j]
+                                        object_i = i
+                                        object_j = j
+                                        self.last_pheromone_time_target_observed = \
+                                            object_sighted.time_target_observed
                             else:
-                                object_sighted = self.matrix[i][j]
+                                if self.last_pheromone_time_target_observed > \
+                                        self.matrix[i][j].time_target_observed:
+                                    object_sighted = self.matrix[i][j]
+                                    object_i = i
+                                    object_j = j
                     # elif self.matrix[i][j].m_type == MarkerType.ANT:
                     #     object_sighted = self.matrix[i][j]
-        return object_sighted, -1, -1
+        return object_sighted, object_i, object_j
 
     def move_to_explore(self):
         movement_change = True if random.random() < self.exploration_rate else False
         if movement_change:
             self.slightly_change_direction()
         else:
-            # self.move_towards_food()
             self.perform_movement()
