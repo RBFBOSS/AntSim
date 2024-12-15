@@ -23,7 +23,7 @@ class Worker(Ant):
 
     def move(self, object_sighted, x, y) -> None:
         if self.destination == Action.IDLE:
-            self.move_randomly()
+            self.move_to_explore()
         else:
             self.move_towards_objective(object_sighted, x, y)
 

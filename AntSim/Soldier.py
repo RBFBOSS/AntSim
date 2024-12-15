@@ -18,7 +18,7 @@ class Soldier(Ant):
 
     def move(self, object_sighted, x, y) -> None:
         if self.destination == Action.IDLE:
-            self.move_randomly()
+            self.move_to_explore()
         elif self.destination == Action.PATROL:
             self.patrol()
         else:

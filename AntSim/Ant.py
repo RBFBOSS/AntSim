@@ -1,3 +1,4 @@
+import time
 from abc import ABC, abstractmethod
 import random
 from Action import Action
@@ -221,19 +222,31 @@ class Ant(ABC):
         pass
 
     def update(self):
+        start_time = time.perf_counter() * 100000
         object_sighted, y, x = self.object_sighted()
+        object_sighted_time = time.perf_counter() * 100000
         self.pheromone_drop_count += 1
         if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
             self.drop_pheromone()
             self.pheromone_drop_count = 0
+        pheromone_drop_time = time.perf_counter() * 100000
         self.move(object_sighted, x, y)
+        move_time = time.perf_counter() * 100000
         self.perform_action()
+        perform_action_time = time.perf_counter() * 100000
         placement_x, placement_y = self.find_spot_for_drop()
         if placement_x != -1 and placement_y != -1:
             self.matrix[placement_y][placement_x] = Marker(MarkerType.ANT, None,
                                                            self.colony_id,
                                                            Globals.global_time_frame,
                                                            Globals.global_time_frame)
+        end_time = time.perf_counter() * 100000
+        print(f"Object sighted: {object_sighted_time - start_time}")
+        print(f"Pheromone drop: {pheromone_drop_time - object_sighted_time}")
+        print(f"Move: {move_time - pheromone_drop_time}")
+        print(f"Perform action: {perform_action_time - move_time}")
+        print(f"Placement: {end_time - perform_action_time}")
+        print('---------------------------------')
 
     def move_towards_objective(self, object_sighted, x, y):
         if object_sighted is None:
