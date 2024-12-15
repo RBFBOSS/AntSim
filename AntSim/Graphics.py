@@ -35,16 +35,16 @@ class Graphics:
             self.draw_sim()
             self.sim_update()
             update()
-            # sleep(0.01)
+            sleep(0.01)
         quit()
 
     def draw_sim(self):
         for pheromone in self.simulation.pheromones:
             if pheromone.target == PheromoneType.TO_COLONY:
-                pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 5)
+                pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
         for pheromone in self.simulation.pheromones:
             if pheromone.target == PheromoneType.TO_FOOD:
-                pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 5)
+                pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 3)
         for food_source in self.simulation.food_sources:
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
         for colony in self.simulation.colonies:

@@ -12,7 +12,7 @@ class Simulation:
         self.width = width
         self.height = height
         self.matrix = [[None for _ in range(width)] for _ in range(height)]
-        self.ants_FOV = 10
+        self.ants_FOV = 20
         self.update_count = 0
         self.pheromones = []
 

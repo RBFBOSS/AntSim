@@ -35,7 +35,10 @@ class Colony:
 
     def produce_ant(self, ant_type) -> None:
         heading_x = random.choice([-1, 0, 1])
-        heading_y = random.choice([-1, 0, 1])
+        if heading_x == 0:
+            heading_y = random.choice([-1, 1])
+        else:
+            heading_y = random.choice([-1, 0, 1])
         if ant_type.lower() == 'worker':
             self.ants.append(Worker(Action.FOOD, 10,
                                     self.x, self.y,

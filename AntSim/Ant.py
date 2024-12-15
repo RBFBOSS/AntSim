@@ -41,7 +41,7 @@ class Ant(ABC):
         self.time_of_last_visit = Globals.global_time_frame
         self.pheromones = pheromones
         self.pheromone_drop_count = 0
-        self.last_pheromone_intensity = 0
+        self.last_pheromone_intensity = -1
         self.times_pheromone_not_dropped = 0
 
     def max_health(self) -> int:
@@ -217,7 +217,7 @@ class Ant(ABC):
     def update(self):
         object_sighted, y, x = self.object_sighted()
         self.pheromone_drop_count += 1
-        if self.pheromone_drop_count >= 10:
+        if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
             self.drop_pheromone()
             self.pheromone_drop_count = 0
         self.move(object_sighted, x, y)
