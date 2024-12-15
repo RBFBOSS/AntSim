@@ -1,9 +1,9 @@
 class Globals:
     global_time_frame = 0.0
-    pheromone_drop_rate = 1
-    update_pheromones_count = 50
-    pheromone_lifespan = 10
-    ants_FOV = 3
+    pheromone_drop_rate = 2
+    update_pheromones_count = 10
+    pheromone_lifespan = 5
+    ants_FOV = 1
 
     @staticmethod
     def increment_time_frame():
