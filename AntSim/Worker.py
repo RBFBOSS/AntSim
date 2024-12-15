@@ -71,53 +71,49 @@ class Worker(Ant):
         object_sighted = None
         object_i = -1
         object_j = -1
-
         for i in range(above, below):
             for j in range(left, right):
-                if self.matrix[i][j] is not None:
-                    if self.matrix[i][j].m_type == MarkerType.COLONY \
-                            and self.matrix[i][j].creator == self.colony_id \
-                            and self.destination == Action.COLONY:
-                        object_sighted = self.matrix[i][j]
-                        self.last_visited_object = object_sighted
-                        self.time_of_last_visit = Globals.global_time_frame
-                        self.last_pheromone_distance = -1
-                        return object_sighted, i, j
-                    if self.matrix[i][j].m_type == MarkerType.FOOD \
-                            and not self.is_carrying_food:
-                        object_sighted = self.matrix[i][j]
-                        self.last_visited_object = object_sighted
-                        self.time_of_last_visit = Globals.global_time_frame
-                        self.last_pheromone_distance = -1
-                        return object_sighted, i, j
-                    elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
-                        if (self.matrix[i][j].target == PheromoneType.TO_FOOD
-                            and self.destination == Action.FOOD) or \
-                                (self.matrix[i][j].target == PheromoneType.TO_COLONY
-                                 and self.destination == Action.COLONY):
-                            if object_sighted is not None:
-                                print("Found another pheromone")
-                                if self.last_pheromone_distance == -1 \
-                                    or self.last_pheromone_distance > \
-                                        self.matrix[i][j].distance:
-                                    if object_sighted.distance > self.matrix[i][j].distance:
+                if i != self.y and j != self.x:
+                    if self.matrix[i][j] is not None:
+                        if self.matrix[i][j].m_type == MarkerType.COLONY \
+                                and self.matrix[i][j].creator == self.colony_id \
+                                and self.destination == Action.COLONY:
+                            object_sighted = self.matrix[i][j]
+                            self.last_visited_object = object_sighted
+                            self.time_of_last_visit = Globals.global_time_frame
+                            self.last_pheromone_distance = -1
+                            return object_sighted, i, j
+                        if self.matrix[i][j].m_type == MarkerType.FOOD \
+                                and not self.is_carrying_food:
+                            object_sighted = self.matrix[i][j]
+                            self.last_visited_object = object_sighted
+                            self.time_of_last_visit = Globals.global_time_frame
+                            self.last_pheromone_distance = -1
+                            return object_sighted, i, j
+                        elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
+                            if (self.matrix[i][j].target == PheromoneType.TO_FOOD
+                                and self.destination == Action.FOOD) or \
+                                    (self.matrix[i][j].target == PheromoneType.TO_COLONY
+                                     and self.destination == Action.COLONY):
+                                if object_sighted is not None:
+                                    if self.last_pheromone_distance == -1 \
+                                        or self.last_pheromone_distance > \
+                                            self.matrix[i][j].distance:
+                                        if object_sighted.distance > self.matrix[i][j].distance:
+                                            object_sighted = self.matrix[i][j]
+                                            object_i = i
+                                            object_j = j
+                                            self.last_pheromone_distance = self.matrix[i][j].distance
+                                else:
+                                    if self.last_pheromone_distance == -1 \
+                                            or self.last_pheromone_distance > \
+                                            self.matrix[i][j].distance:
                                         object_sighted = self.matrix[i][j]
                                         object_i = i
                                         object_j = j
-                                        self.last_pheromone_distance = \
-                                            Globals.global_time_frame - object_sighted.distance
-                            else:
-                                if self.last_pheromone_distance == -1 \
-                                        or self.last_pheromone_distance > \
-                                        self.matrix[i][j].distance:
-                                    print("Found another pheromone")
-                                    object_sighted = self.matrix[i][j]
-                                    object_i = i
-                                    object_j = j
-                                    self.last_pheromone_distance = \
-                                        Globals.global_time_frame - object_sighted.distance
-                    # elif self.matrix[i][j].m_type == MarkerType.ANT:
-                    #     object_sighted = self.matrix[i][j]
+                                        self.last_pheromone_distance = self.matrix[i][j].distance
+                        # elif self.matrix[i][j].m_type == MarkerType.ANT:
+                        #     object_sighted = self.matrix[i][j]
         return object_sighted, object_i, object_j
 
     def move_to_explore(self):
