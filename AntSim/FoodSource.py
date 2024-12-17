@@ -18,4 +18,3 @@ class FoodSource:
                 self.matrix[i][j] = Marker(MarkerType.FOOD,
                                            None, food_id, 0,
                                            Globals.global_time_frame)
-

@@ -21,7 +21,7 @@ def update():
 class Graphics:
     def __init__(self, simulation):
         pygame.init()
-        self.screen = pygame.display.set_mode((simulation.width, simulation.height))
+        self.screen = pygame.display.set_mode((Globals.width, Globals.height))
         self.simulation = simulation
         pygame.display.set_caption("AntSim")
         self.run()
@@ -41,15 +41,15 @@ class Graphics:
         quit()
 
     def draw_sim(self):
-        for pheromone in self.simulation.pheromones:
+        for pheromone in Globals.pheromones:
             if pheromone.target == PheromoneType.TO_COLONY:
                 pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
-        for pheromone in self.simulation.pheromones:
+        for pheromone in Globals.pheromones:
             if pheromone.target == PheromoneType.TO_FOOD:
                 pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 1)
-        for food_source in self.simulation.food_sources:
+        for food_source in Globals.food_sources:
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
-        for colony in self.simulation.colonies:
+        for colony in Globals.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
             x = colony.x
             y = colony.y
@@ -59,8 +59,8 @@ class Graphics:
             right = int(min(1519, x + 30))
             for ant in colony.ants:
                 pygame.draw.rect(self.screen, (0, 0, 0),
-                                 (ant.x - Globals.ants_FOV/2, ant.y - Globals.ants_FOV/2,
-                                  Globals.ants_FOV, Globals.ants_FOV), 1)
+                                 (ant.x - Globals.ant_FOV, ant.y - Globals.ant_FOV,
+                                  Globals.ant_FOV * 2, Globals.ant_FOV * 2), 1)
                 if isinstance(ant, Worker):
                     pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
                     pygame.draw.circle(self.screen, (0, 0, 0),

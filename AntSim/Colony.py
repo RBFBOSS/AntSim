@@ -10,7 +10,7 @@ from Soldier import Soldier
 
 class Colony:
     def __init__(self, colony_id, x: int, y: int,
-                 ants_FOV: int, matrix, pheromones):
+                 matrix, pheromones):
         self.colony_id = colony_id
         self.ants = []
         self.food_supply = 0
@@ -24,7 +24,6 @@ class Colony:
         self.updates = 0
         self.nr_of_workers = 0
         self.nr_of_soldiers = 0
-        self.ants_FOV = ants_FOV
         self.matrix = matrix
         above = int(max(0, self.y - 30))
         below = int(min(899, self.y + 30))
@@ -48,16 +47,14 @@ class Colony:
                                     self.x, self.y,
                                     heading_x, heading_y,
                                     0, self.colony_id,
-                                    self.ants_FOV, self.matrix,
-                                    self.pheromones))
+                                    self.matrix, self.pheromones))
             self.nr_of_workers += 1
         else:
             self.ants.append(Soldier(Action.IDLE, 20,
                                      self.x, self.y,
                                      heading_x, heading_y,
                                      0, self.colony_id,
-                                     self.ants_FOV, self.matrix,
-                                     self.pheromones))
+                                     self.matrix, self.pheromones))
             self.nr_of_soldiers += 1
 
     def print_ants(self):
