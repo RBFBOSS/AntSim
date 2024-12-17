@@ -43,6 +43,10 @@ class Ant(ABC):
         self.last_x = x
         self.last_y = y
         self.time_no_pheromone_sighted = 0
+        self.heading_towards_objective = False
+        self.last_objective_sighted = None
+        self.last_objective_sighted_x = -1
+        self.last_objective_sighted_y = -1
 
     def max_health(self) -> int:
         return self.max_health
@@ -52,11 +56,11 @@ class Ant(ABC):
             if self.matrix[y][x] is None:
                 return True, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
-                return False, x, y
+                return True, x, y
 
         elif purpose == 'pheromone':
             if self.matrix[y][x] is None:
-                return False, x, y
+                return True, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
                 if (((self.matrix[y][x].target == PheromoneType.TO_COLONY
                     and self.last_visited_object.m_type == MarkerType.COLONY)
@@ -64,6 +68,7 @@ class Ant(ABC):
                             and self.last_visited_object.m_type == MarkerType.FOOD))
                         and Globals.global_time_frame - self.matrix[y][x].creation_time >
                         Globals.time_until_pheromone_override):
+                    print("Overriding pheromone")
                     if self.last_pheromone_distance < self.matrix[y][x].distance:
                         self.last_pheromone_distance = self.matrix[y][x].distance
                         Ant.delete_pheromone_on_position(x, y)
@@ -74,31 +79,35 @@ class Ant(ABC):
     def find_and_clear_spot_for_drop(self, purpose):
         alternative_x = -1
         alternative_y = -1
-        for dist in range(0, Globals.ant_FOV):
-            above = int(max(0, self.y - dist))
-            below = int(min(899, self.y + dist))
-            left = int(max(0, self.x - dist))
-            right = int(min(1519, self.x + dist))
-            for i in range(above, below):
-                for j in range(left, right):
-                    done, x, y = self.find_and_clear_precise_spot_for_drop(j, i, purpose)
-                    if done:
-                        return x, y
-                    else:
-                        if x != -1 and y != -1:
-                            alternative_x = x
-                            alternative_y = y
+        if purpose == 'ant':
+            done, x, y = self.find_and_clear_precise_spot_for_drop(self.x, self.y, purpose)
+            return x, y
+        elif purpose == 'pheromone':
+            for dist in range(0, Globals.pheromone_drop_FOV):
+                above = int(max(0, self.y - dist))
+                below = int(min(899, self.y + dist))
+                left = int(max(0, self.x - dist))
+                right = int(min(1519, self.x + dist))
+                for i in range(above, below):
+                    for j in range(left, right):
+                        done, x, y = self.find_and_clear_precise_spot_for_drop(j, i, purpose)
+                        if done:
+                            return x, y
+                        else:
+                            if x != -1 and y != -1:
+                                alternative_x = x
+                                alternative_y = y
 
-        if alternative_x != -1 and alternative_y != -1:
-            Ant.delete_pheromone_on_position(alternative_x, alternative_y)
-        return alternative_x, alternative_y
+            if alternative_x != -1 and alternative_y != -1:
+                Ant.delete_pheromone_on_position(alternative_x, alternative_y)
+            return alternative_x, alternative_y
 
     @staticmethod
     def delete_pheromone_on_position(x: int, y: int):
         for i in range(len(Globals.pheromones)):
             if Globals.pheromones[i].x == x and Globals.pheromones[i].y == y:
-                Globals.pheromones[i].clear()
-                Globals.pheromones.pop(i)
+                # Globals.pheromones[i].clear()
+                # Globals.pheromones.pop(i)
                 break
 
     def drop_pheromone(self) -> None:
@@ -184,6 +193,11 @@ class Ant(ABC):
 
     def perform_movement(self) -> None:
         if self.heading_x == 0 and self.heading_y == 0:
+            print('-----------------------------------')
+            print('-----------------------------------')
+            print("STANDING STILL")
+            print('-----------------------------------')
+            print('-----------------------------------')
             self.heading_x = random.choice([-1, 0, 1])
             if self.heading_x == 0:
                 self.heading_y = random.choice([-1, 1])
@@ -225,14 +239,24 @@ class Ant(ABC):
     def update(self):
         start_time = time.perf_counter() * 100000
         self.matrix[self.last_y][self.last_x] = None
-        object_sighted, y, x = self.object_sighted()
+        if not self.heading_towards_objective:
+            object_sighted, y, x = self.object_sighted()
+        else:
+            if self.last_objective_sighted_x == self.x and self.last_objective_sighted_y == self.y:
+                self.heading_towards_objective = False
+                object_sighted, y, x = self.object_sighted()
+            else:
+                object_sighted = self.last_objective_sighted
+                x = self.last_objective_sighted_x
+                y = self.last_objective_sighted_y
         object_sighted_time = time.perf_counter() * 100000
         if object_sighted is None:
+            if self.last_visited_object.m_type == MarkerType.COLONY:
+                print('OOOOOOOOOOOOOOOOOOOOOO')
             if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
                 self.last_pheromone_distance = -1
             else:
                 self.time_no_pheromone_sighted += 0.01
-        else:
             self.time_no_pheromone_sighted = 0
         self.pheromone_drop_count += 1
         if self.pheromone_drop_count >= Globals.pheromone_drop_rate:

@@ -34,14 +34,21 @@ class Simulation:
 
     def update(self):
         Globals.increment_time_frame()
-        if Globals.global_time_frame >= 10:
-            print('100 seconds passed')
+        # if Globals.global_time_frame >= 10:
+        #     print('100 seconds passed')
         for colony in Globals.colonies:
             colony.update()
         self.update_count += 1
         if self.update_count >= Globals.update_pheromones_count:
             self.delete_old_pheromones()
             self.update_count = 0
+            print('===============================')
+            print('===============================')
+            print(Globals.avg_pheromone_creation_time / Globals.new_count)
+            print('===============================')
+            print('===============================')
+            Globals.avg_pheromone_creation_time = 0
+            Globals.new_count = 1
             # print("Ant stats:")
             # print('Object sighted -> ', Globals.avg_object_sighted_time / Globals.ant_operations)
             # # print('Move -> ', Globals.avg_move_time / Globals.ant_operations)

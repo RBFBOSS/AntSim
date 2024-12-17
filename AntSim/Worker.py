@@ -38,6 +38,7 @@ class Worker(Ant):
                             self.last_visited_object = self.matrix[i][j]
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
+                            self.heading_towards_objective = False
                             break
             if food_in_reach:
                 self.is_carrying_food = True
@@ -56,6 +57,7 @@ class Worker(Ant):
                             self.last_visited_object = self.matrix[i][j]
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
+                            self.heading_towards_objective = False
                             break
             if colony_in_reach:
                 self.is_carrying_food = False
@@ -76,7 +78,7 @@ class Worker(Ant):
         gasit_feromon = False
         for i in range(above, below):
             for j in range(left, right):
-                if i != self.y and j != self.x:
+                if i != self.y or j != self.x:
                     if self.matrix[i][j] is not None:
                         if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
                             Globals.pheromones_sighted += 1
@@ -91,11 +93,19 @@ class Worker(Ant):
                                 and self.matrix[i][j].creator == self.colony_id \
                                 and self.destination == Action.COLONY:
                             object_sighted = copy.deepcopy(self.matrix[i][j])
+                            self.heading_towards_objective = True
+                            self.last_objective_sighted = object_sighted
+                            self.last_objective_sighted_x = j
+                            self.last_objective_sighted_y = i
                             return object_sighted, i, j
                         if self.matrix[i][j].m_type == MarkerType.FOOD \
                                 and not self.is_carrying_food \
                                 and self.destination == Action.FOOD:
                             object_sighted = copy.deepcopy(self.matrix[i][j])
+                            self.heading_towards_objective = True
+                            self.last_objective_sighted = object_sighted
+                            self.last_objective_sighted_x = j
+                            self.last_objective_sighted_y = i
                             return object_sighted, i, j
                         elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
                             if ((self.matrix[i][j].target == PheromoneType.TO_FOOD
@@ -103,19 +113,22 @@ class Worker(Ant):
                                     (self.matrix[i][j].target == PheromoneType.TO_COLONY
                                      and self.destination == Action.COLONY) and
                                     self.matrix[i][j].creator == self.colony_id):
-                                if (Globals.global_time_frame - self.matrix[i][j].creation_time >=
-                                        Globals.how_old_pheromone_to_consider):
+                                Globals.avg_pheromone_creation_time += self.matrix[i][j].creation_time
+                                Globals.new_count += 1
+                                # if (Globals.global_time_frame - self.matrix[i][j].creation_time <
+                                #         Globals.how_young_pheromone_to_consider):
+                                print('XXXXXXXXXXXXXXXXXXXXXX')
                                     # if pheromones_checked < Globals.pheromones_to_check:
                                     #     pheromones_checked += 1
                                     # else:
                                     #     self.last_pheromone_distance = object_sighted.distance
                                     #     return object_sighted, object_i, object_j
-                                    gasit_feromon = True
-                                    if self.last_pheromone_distance == -1 \
-                                            or self.last_pheromone_distance > \
-                                            self.matrix[i][j].distance:
-                                        if gasit_feromon:
-                                            e_bun = True
+                                gasit_feromon = True
+                                if self.last_pheromone_distance == -1 \
+                                        or self.last_pheromone_distance > \
+                                        self.matrix[i][j].distance:
+                                    if gasit_feromon:
+                                        e_bun = True
                                         # if object_sighted is not None:
                                         #     if object_sighted.distance > self.matrix[i][j].distance:
                                         #         object_sighted = copy.deepcopy(self.matrix[i][j])
@@ -124,12 +137,15 @@ class Worker(Ant):
                                         #         self.last_pheromone_distance =
                                         #         copy.deepcopy(self.matrix[i][j].distance)
                                         # else:
-                                        object_sighted = copy.deepcopy(self.matrix[i][j])
-                                        object_i = i
-                                        object_j = j
-                                        self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)
-                                        print('am gasit cox')
-                                        return object_sighted, object_i, object_j
+                                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                                    object_i = i
+                                    object_j = j
+                                    self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)
+                                    self.heading_towards_objective = True
+                                    self.last_objective_sighted = object_sighted
+                                    self.last_objective_sighted_x = j
+                                    self.last_objective_sighted_y = i
+                                    return object_sighted, object_i, object_j
                                     # else:
                                     #     if self.last_pheromone_distance < \
                                     #             self.matrix[i][j].distance:
@@ -138,12 +154,17 @@ class Worker(Ant):
                                     #     else:
                                     #         print('am castigat cox', self.last_pheromone_distance,
                                     #               self.matrix[i][j].distance)
-                                else:
-                                    print('Pheromone was too old')
+                                # else:
+                                #     print('Pheromone was too old')
                         # elif self.matrix[i][j].m_type == MarkerType.ANT:
                         #     object_sighted = self.matrix[i][j]
-        # if not e_bun and gasit_feromon:
-        #     print('cox')
+        if not e_bun and gasit_feromon:
+            print('Not found a better pheromone')
+        if object_sighted is not None:
+            self.heading_towards_objective = True
+            self.last_objective_sighted = object_sighted
+            self.last_objective_sighted_x = self.last_objective_sighted_x
+            self.last_objective_sighted_y = self.last_objective_sighted_y
         return object_sighted, object_i, object_j
 
     def move_to_explore(self):
