@@ -1,6 +1,7 @@
 import random
 
 from Action import Action
+from Globals import Globals
 from Marker import Marker
 from MarkerType import MarkerType
 from Worker import Worker
@@ -9,11 +10,8 @@ from Soldier import Soldier
 
 class Colony:
     def __init__(self, colony_id, x: int, y: int,
-                 speed: int, exploration_rate: float,
                  ants_FOV: int, matrix, pheromones):
         self.colony_id = colony_id
-        self.speed = speed
-        self.exploration_rate = exploration_rate
         self.ants = []
         self.food_supply = 0
         self.food_supply_size = 1000
@@ -28,9 +26,15 @@ class Colony:
         self.nr_of_soldiers = 0
         self.ants_FOV = ants_FOV
         self.matrix = matrix
-        self.matrix[y][x] = Marker(MarkerType.COLONY,
-                                   None, self.colony_id,
-                                   0, 0)
+        above = int(max(0, self.y - 30))
+        below = int(min(899, self.y + 30))
+        left = int(max(0, self.x - 30))
+        right = int(min(1519, self.x + 30))
+        for i in range(above, below):
+            for j in range(left, right):
+                self.matrix[i][j] = Marker(MarkerType.COLONY,
+                                           None, self.colony_id,
+                                           0, Globals.global_time_frame)
         self.pheromones = pheromones
 
     def produce_ant(self, ant_type) -> None:
@@ -44,7 +48,6 @@ class Colony:
                                     self.x, self.y,
                                     heading_x, heading_y,
                                     0, self.colony_id,
-                                    self.speed, self.exploration_rate,
                                     self.ants_FOV, self.matrix,
                                     self.pheromones))
             self.nr_of_workers += 1
@@ -53,7 +56,6 @@ class Colony:
                                      self.x, self.y,
                                      heading_x, heading_y,
                                      0, self.colony_id,
-                                     self.speed, self.exploration_rate,
                                      self.ants_FOV, self.matrix,
                                      self.pheromones))
             self.nr_of_soldiers += 1

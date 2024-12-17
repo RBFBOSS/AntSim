@@ -36,7 +36,8 @@ class Graphics:
             self.draw_sim()
             self.sim_update()
             update()
-            # sleep(0.01)
+            if Globals.delay_rate:
+                sleep(Globals.delay_rate)
         quit()
 
     def draw_sim(self):
@@ -45,11 +46,17 @@ class Graphics:
                 pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
         for pheromone in self.simulation.pheromones:
             if pheromone.target == PheromoneType.TO_FOOD:
-                pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 3)
+                pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 1)
         for food_source in self.simulation.food_sources:
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
         for colony in self.simulation.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
+            x = colony.x
+            y = colony.y
+            above = int(max(0, y - 30))
+            below = int(min(899, y + 30))
+            left = int(max(0, x - 30))
+            right = int(min(1519, x + 30))
             for ant in colony.ants:
                 pygame.draw.rect(self.screen, (0, 0, 0),
                                  (ant.x - Globals.ants_FOV/2, ant.y - Globals.ants_FOV/2,
