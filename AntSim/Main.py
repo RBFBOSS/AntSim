@@ -7,18 +7,18 @@ from Simulation import Simulation
 w = 20
 h = 20
 m = [['.' for _ in range(w)] for _ in range(h)]
-y = 7
-x = 7
+y = 6
+x = 6
 above = int(max(0, y - Globals.ant_FOV))
-below = int(min(899, y + Globals.ant_FOV + 1))
+below = int(min(20, y + Globals.ant_FOV + 1))
 left = int(max(0, x - Globals.ant_FOV))
-right = int(min(1519, x + Globals.ant_FOV + 1))
+right = int(min(20, x + Globals.ant_FOV + 1))
 print('above', above)
 print('below', below)
 print('right', right)
 print('left', left)
-heading_y = -1
-heading_x = 1
+heading_y = 0
+heading_x = -1
 
 for i in range(above, below):
     for j in range(left, right):
@@ -60,7 +60,7 @@ if first_checked_position_y == above:
                     m[j + above][i + left] = '0'
     elif first_checked_position_x == right:
         for i in range(0, y + 1 - above):
-            for j in range(right - left - 1, x + i, -1):
+            for j in range(right - left - i - 1, x - left - 1, -1):
                 sleep(0.5)
                 m[y][x] = 'X'
 
@@ -70,7 +70,87 @@ if first_checked_position_y == above:
                     print()
                 m[i + above][j + left] = '0'
                 if i + j != below - above:
-                    m[j + above][i + left] = '0'
+                    m[above - below - j][right - i - 1] = '0'
+    else:
+        for i in range(0, y + 1 - above):
+            for j in range(x - left, right - left - i):
+                sleep(0.5)
+                m[y][x] = 'X'
+
+                for f in range(h):
+                    for g in range(w):
+                        print(m[f][g], " ", end=' ')
+                    print()
+                m[i + above][j + left] = '0'
+                if j != x - left:
+                    m[i + above][2*x - j - left] = '0'
+elif first_checked_position_y == below:
+    if first_checked_position_x == left:
+        for i in range(0, below - y):
+            for j in range(i, x + 1 - left):
+                sleep(0.5)
+                m[y][x] = 'X'
+
+                for f in range(h):
+                    for g in range(w):
+                        print(m[f][g], " ", end=' ')
+                    print()
+                m[below - i - 1][j + left] = '0'
+                if i + j != below - above:
+                    m[below - j - 1][left + i] = '0'
+    elif first_checked_position_x == right:
+        for i in range(0, below - y):
+            for j in range(right - left - i - 1, x - left - 1, -1):
+                sleep(0.5)
+                m[y][x] = 'X'
+
+                for f in range(h):
+                    for g in range(w):
+                        print(m[f][g], " ", end=' ')
+                    print()
+                m[below - i - 1][j + left] = '0'
+                if i != j:
+                    m[above + j][left + i] = '0'
+    else:
+        for i in range(0, below - y):
+            for j in range(x - left, right - left - i):
+                sleep(0.5)
+                m[y][x] = 'X'
+
+                for f in range(h):
+                    for g in range(w):
+                        print(m[f][g], " ", end=' ')
+                    print()
+                m[below - i - 1][j + left] = '0'
+                if j != x - left:
+                    m[below - i - 1][2*x - j - left] = '0'
+else:
+    if first_checked_position_x == left:
+        for j in range(0, x - left):
+            for i in range(y - above, below - above - j):
+                sleep(0.5)
+                m[y][x] = 'X'
+
+                for f in range(h):
+                    for g in range(w):
+                        print(m[f][g], " ", end=' ')
+                    print()
+                m[i + above][j + left] = '0'
+                if i != y:
+                    m[below - i - 1][j + left] = '0'
+    else:
+        for j in range(right - x - 1, 0, -1):
+            for i in range(0, j + 1):
+                sleep(0.5)
+                m[y][x] = 'X'
+
+                for f in range(h):
+                    for g in range(w):
+                        print(m[f][g], " ", end=' ')
+                    print()
+                m[i + y][j + x] = '0'
+                if i != y: //CONTINUE HERE
+                    m[y - i][j + x] = '0'
 
 m[y][x] = 'X'
 
