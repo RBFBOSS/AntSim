@@ -355,20 +355,20 @@ class Ant(ABC):
         right = int(min(1519, self.x + Globals.ant_FOV))
         if self.heading_y == -1:
             if self.heading_x == 0:
-                return (left + right) / 2, above
+                return self.x, above
             elif self.heading_x == 1:
                 return right, above
             else:
                 return left, above
         elif self.heading_y == 1:
             if self.heading_x == 0:
-                return (left + right) / 2, below
+                return self.x, below
             elif self.heading_x == 1:
                 return right, below
             else:
                 return left, below
         else:
             if self.heading_x == 1:
-                return right, (above + below) / 2
+                return right, self.y
             else:
-                return left, (above + below) / 2
+                return left, self.y

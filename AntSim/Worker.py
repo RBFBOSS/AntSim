@@ -167,10 +167,36 @@ class Worker(Ant):
         first_checked_position_x, first_checked_position_y = self.get_first_angle_to_check()
         if first_checked_position_y == above:
             if first_checked_position_x == left:
-                for i in range(above, self.y + 1):
-                    for j in range(above - i + left, self.x + 1):
-                        object_sighted, object_i, object_j = self.look_for_object_at_precise_spot(i, j)
-                        #to continue============================
+                for i in range(0, self.y + 1 - above):
+                    for j in range(i, self.x + 1 - left):
+                        object_sighted, object_i, object_j = \
+                            self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if i != j:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(j + above, i + left)
+                            if object_sighted is not None:
+                                return object_sighted, object_i, object_j
+            elif first_checked_position_x == right:
+                for i in range(0, self.y + 1 - above):
+                    for j in range(i, right - self.x, -1):
+                        object_sighted, object_i, object_j = \
+                            self.look_for_object_at_precise_spot(i + above, j + right)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if i + j != below - above:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(j + above, i + right)
+                            if object_sighted is not None:
+                                return object_sighted, object_i, object_j
+            else:
+                for i in range(0, self.y + 1 - above):
+                    for j in range(left, right):
+                        object_sighted, object_i, object_j = \
+                            self.look_for_object_at_precise_spot(i + above, j)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
 
         for i in range(above, below):
             for j in range(left, right):
