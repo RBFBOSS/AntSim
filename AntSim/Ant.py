@@ -249,7 +249,7 @@ class Ant(ABC):
         pass
 
     def update(self):
-        start_time = time.perf_counter() * 100000
+        # start_time = time.perf_counter() * 100000
         # if self.matrix[self.last_y][self.last_x] is not None:
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
         #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
@@ -263,7 +263,7 @@ class Ant(ABC):
                 object_sighted = self.last_objective_sighted
                 x = self.last_objective_sighted_x
                 y = self.last_objective_sighted_y
-        object_sighted_time = time.perf_counter() * 100000
+        # object_sighted_time = time.perf_counter() * 100000
         if object_sighted is None:
             if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
                 self.last_pheromone_distance = -1
@@ -274,11 +274,11 @@ class Ant(ABC):
         if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
             self.drop_pheromone()
             self.pheromone_drop_count = 0
-        pheromone_drop_time = time.perf_counter() * 100000
+        # pheromone_drop_time = time.perf_counter() * 100000
         self.move(object_sighted, x, y)
-        move_time = time.perf_counter() * 100000
+        # move_time = time.perf_counter() * 100000
         self.perform_action()
-        perform_action_time = time.perf_counter() * 100000
+        # perform_action_time = time.perf_counter() * 100000
         placement_x, placement_y = self.find_and_clear_spot_for_drop('ant')
         self.last_y = placement_y
         self.last_x = placement_x
@@ -287,14 +287,14 @@ class Ant(ABC):
                                                            self.colony_id,
                                                            Globals.global_time_frame,
                                                            Globals.global_time_frame)
-        end_time = time.perf_counter() * 100000
-        Globals.avg_object_sighted_time += object_sighted_time - start_time
-        Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
-        Globals.avg_move_time += move_time - pheromone_drop_time
-        Globals.avg_perform_action_time += perform_action_time - move_time
-        Globals.avg_placement_time += end_time - perform_action_time
-        Globals.entire_time += end_time - start_time
-        Globals.ant_operations += 1
+        # end_time = time.perf_counter() * 100000
+        # Globals.avg_object_sighted_time += object_sighted_time - start_time
+        # Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
+        # Globals.avg_move_time += move_time - pheromone_drop_time
+        # Globals.avg_perform_action_time += perform_action_time - move_time
+        # Globals.avg_placement_time += end_time - perform_action_time
+        # Globals.entire_time += end_time - start_time
+        # Globals.ant_operations += 1
 
     def move_towards_objective(self, object_sighted, x, y):
         if object_sighted is None:
@@ -347,3 +347,28 @@ class Ant(ABC):
     @abstractmethod
     def perform_action(self):
         pass
+
+    def get_first_angle_to_check(self):
+        above = int(max(0, self.y - Globals.ant_FOV))
+        below = int(min(899, self.y + Globals.ant_FOV))
+        left = int(max(0, self.x - Globals.ant_FOV))
+        right = int(min(1519, self.x + Globals.ant_FOV))
+        if self.heading_y == -1:
+            if self.heading_x == 0:
+                return (left + right) / 2, above
+            elif self.heading_x == 1:
+                return right, above
+            else:
+                return left, above
+        elif self.heading_y == 1:
+            if self.heading_x == 0:
+                return (left + right) / 2, below
+            elif self.heading_x == 1:
+                return right, below
+            else:
+                return left, below
+        else:
+            if self.heading_x == 1:
+                return right, (above + below) / 2
+            else:
+                return left, (above + below) / 2

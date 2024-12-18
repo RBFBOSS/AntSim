@@ -65,6 +65,94 @@ class Worker(Ant):
                 self.heading_y = -self.heading_y
                 self.heading_x = -self.heading_x
 
+    def look_for_object_at_precise_spot(self, i, j):
+        object_sighted = None
+        object_i = -1
+        object_j = -1
+        if i != self.y or j != self.x:
+            if self.matrix[i][j] is not None:
+                if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
+                    Globals.pheromones_sighted += 1
+                elif self.matrix[i][j].m_type == MarkerType.COLONY:
+                    Globals.colonies_sighted += 1
+                elif self.matrix[i][j].m_type == MarkerType.ANT:
+                    Globals.ants_sighted += 1
+                elif self.matrix[i][j].m_type == MarkerType.FOOD:
+                    Globals.food_sources_sighted += 1
+                Globals.objects_sighted += 1
+                if self.matrix[i][j].m_type == MarkerType.COLONY \
+                        and self.matrix[i][j].creator == self.colony_id \
+                        and self.destination == Action.COLONY:
+                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                    self.heading_towards_objective = True
+                    self.last_objective_sighted = object_sighted
+                    self.last_objective_sighted_x = j
+                    self.last_objective_sighted_y = i
+                    return object_sighted, i, j
+                if self.matrix[i][j].m_type == MarkerType.FOOD \
+                        and not self.is_carrying_food \
+                        and self.destination == Action.FOOD:
+                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                    self.heading_towards_objective = True
+                    self.last_objective_sighted = object_sighted
+                    self.last_objective_sighted_x = j
+                    self.last_objective_sighted_y = i
+                    return object_sighted, i, j
+                elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
+                    # print('ANT -> ', self.destination)
+                    # print('PHEROMONE -> ', self.matrix[i][j].target)
+                    if ((self.matrix[i][j].target == PheromoneType.TO_FOOD
+                         and self.destination == Action.FOOD) or
+                            (self.matrix[i][j].target == PheromoneType.TO_COLONY
+                             and self.destination == Action.COLONY)):
+                        print('XXXXXXXXXXXXXXXXXXX')
+                        if self.matrix[i][j].creator == self.colony_id:
+                            # Globals.avg_pheromone_creation_time += self.matrix[i][j].creation_time
+                            # Globals.new_count += 1
+                            # if (Globals.global_time_frame - self.matrix[i][j].creation_time <
+                            #         Globals.how_young_pheromone_to_consider):
+                            # if pheromones_checked < Globals.pheromones_to_check:
+                            #     pheromones_checked += 1
+                            # else:
+                            #     self.last_pheromone_distance = object_sighted.distance
+                            #     return object_sighted, object_i, object_j
+                            gasit_feromon = True
+                            if self.last_pheromone_distance == -1 \
+                                    or self.last_pheromone_distance > \
+                                    self.matrix[i][j].distance:
+                                if gasit_feromon:
+                                    e_bun = True
+                                    # if object_sighted is not None:
+                                    #     if object_sighted.distance > self.matrix[i][j].distance:
+                                    #         object_sighted = copy.deepcopy(self.matrix[i][j])
+                                    #         object_i = i
+                                    #         object_j = j
+                                    #         self.last_pheromone_distance =
+                                    #         copy.deepcopy(self.matrix[i][j].distance)
+                                    # else:
+                                object_sighted = copy.deepcopy(self.matrix[i][j])
+                                object_i = i
+                                object_j = j
+                                self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)
+                                self.heading_towards_objective = True
+                                self.last_objective_sighted = object_sighted
+                                self.last_objective_sighted_x = j
+                                self.last_objective_sighted_y = i
+                                return object_sighted, object_i, object_j
+                                # else:
+                                #     if self.last_pheromone_distance < \
+                                #             self.matrix[i][j].distance:
+                                #         print('K', self.last_pheromone_distance,
+                                #               self.matrix[i][j].distance)
+                                #     else:
+                                #         print('am castigat cox', self.last_pheromone_distance,
+                                #               self.matrix[i][j].distance)
+                            # else:
+                            #     print('Pheromone was too old')
+                    # elif self.matrix[i][j].m_type == MarkerType.ANT:
+                            #     object_sighted = self.matrix[i][j]
+        return object_sighted, object_i, object_j
+
     def object_sighted(self):
         above = int(max(0, self.y - Globals.ant_FOV))
         below = int(min(899, self.y + Globals.ant_FOV))
@@ -76,89 +164,17 @@ class Worker(Ant):
         pheromones_checked = 0
         e_bun = False
         gasit_feromon = False
+        first_checked_position_x, first_checked_position_y = self.get_first_angle_to_check()
+        if first_checked_position_y == above:
+            if first_checked_position_x == left:
+                for i in range(above, self.y + 1):
+                    for j in range(above - i + left, self.x + 1):
+                        object_sighted, object_i, object_j = self.look_for_object_at_precise_spot(i, j)
+                        #to continue============================
+
         for i in range(above, below):
             for j in range(left, right):
-                if i != self.y or j != self.x:
-                    if self.matrix[i][j] is not None:
-                        if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
-                            Globals.pheromones_sighted += 1
-                        elif self.matrix[i][j].m_type == MarkerType.COLONY:
-                            Globals.colonies_sighted += 1
-                        elif self.matrix[i][j].m_type == MarkerType.ANT:
-                            Globals.ants_sighted += 1
-                        elif self.matrix[i][j].m_type == MarkerType.FOOD:
-                            Globals.food_sources_sighted += 1
-                        Globals.objects_sighted += 1
-                        if self.matrix[i][j].m_type == MarkerType.COLONY \
-                                and self.matrix[i][j].creator == self.colony_id \
-                                and self.destination == Action.COLONY:
-                            object_sighted = copy.deepcopy(self.matrix[i][j])
-                            self.heading_towards_objective = True
-                            self.last_objective_sighted = object_sighted
-                            self.last_objective_sighted_x = j
-                            self.last_objective_sighted_y = i
-                            return object_sighted, i, j
-                        if self.matrix[i][j].m_type == MarkerType.FOOD \
-                                and not self.is_carrying_food \
-                                and self.destination == Action.FOOD:
-                            object_sighted = copy.deepcopy(self.matrix[i][j])
-                            self.heading_towards_objective = True
-                            self.last_objective_sighted = object_sighted
-                            self.last_objective_sighted_x = j
-                            self.last_objective_sighted_y = i
-                            return object_sighted, i, j
-                        elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
-                            # print('ANT -> ', self.destination)
-                            # print('PHEROMONE -> ', self.matrix[i][j].target)
-                            if ((self.matrix[i][j].target == PheromoneType.TO_FOOD
-                                 and self.destination == Action.FOOD) or
-                                    (self.matrix[i][j].target == PheromoneType.TO_COLONY
-                                     and self.destination == Action.COLONY)):
-                                if self.matrix[i][j].creator == self.colony_id:
-                                    # Globals.avg_pheromone_creation_time += self.matrix[i][j].creation_time
-                                    # Globals.new_count += 1
-                                    # if (Globals.global_time_frame - self.matrix[i][j].creation_time <
-                                    #         Globals.how_young_pheromone_to_consider):
-                                    # if pheromones_checked < Globals.pheromones_to_check:
-                                    #     pheromones_checked += 1
-                                    # else:
-                                    #     self.last_pheromone_distance = object_sighted.distance
-                                    #     return object_sighted, object_i, object_j
-                                    gasit_feromon = True
-                                    if self.last_pheromone_distance == -1 \
-                                            or self.last_pheromone_distance > \
-                                            self.matrix[i][j].distance:
-                                        if gasit_feromon:
-                                            e_bun = True
-                                            # if object_sighted is not None:
-                                            #     if object_sighted.distance > self.matrix[i][j].distance:
-                                            #         object_sighted = copy.deepcopy(self.matrix[i][j])
-                                            #         object_i = i
-                                            #         object_j = j
-                                            #         self.last_pheromone_distance =
-                                            #         copy.deepcopy(self.matrix[i][j].distance)
-                                            # else:
-                                        object_sighted = copy.deepcopy(self.matrix[i][j])
-                                        object_i = i
-                                        object_j = j
-                                        self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)
-                                        self.heading_towards_objective = True
-                                        self.last_objective_sighted = object_sighted
-                                        self.last_objective_sighted_x = j
-                                        self.last_objective_sighted_y = i
-                                        return object_sighted, object_i, object_j
-                                        # else:
-                                        #     if self.last_pheromone_distance < \
-                                        #             self.matrix[i][j].distance:
-                                        #         print('K', self.last_pheromone_distance,
-                                        #               self.matrix[i][j].distance)
-                                        #     else:
-                                        #         print('am castigat cox', self.last_pheromone_distance,
-                                        #               self.matrix[i][j].distance)
-                                    # else:
-                                    #     print('Pheromone was too old')
-                            # elif self.matrix[i][j].m_type == MarkerType.ANT:
-                            #     object_sighted = self.matrix[i][j]
+                object_sighted, object_i, object_j = self.look_for_object_at_precise_spot(i, j)
         # if not e_bun and gasit_feromon:
         #     print('Not found a better pheromone')
         if object_sighted is not None:
