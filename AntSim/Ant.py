@@ -67,15 +67,14 @@ class Ant(ABC):
                      and self.last_visited_object.m_type == MarkerType.COLONY)
                         or (self.matrix[y][x].target == PheromoneType.TO_FOOD
                             and self.last_visited_object.m_type == MarkerType.FOOD)):
-                    print("Overriding pheromone")
                     if Globals.global_time_frame - self.matrix[y][x].creation_time > \
                             Globals.time_until_pheromone_override:
                         if self.last_pheromone_distance < self.matrix[y][x].distance:
                             self.last_pheromone_distance = self.matrix[y][x].distance
                             Ant.delete_pheromone_on_position(x, y)
                             return True, x, y
-                else:
-                    print('Found irrelevant pheromone')
+                # else:
+                #     print('Found irrelevant pheromone')
 
         return False, -1, -1
 
@@ -290,16 +289,15 @@ class Ant(ABC):
                                                            Globals.global_time_frame)
         end_time = time.perf_counter() * 100000
         Globals.avg_object_sighted_time += object_sighted_time - start_time
-        # Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
-        # Globals.avg_move_time += move_time - pheromone_drop_time
-        # Globals.avg_perform_action_time += perform_action_time - move_time
-        # Globals.avg_placement_time += end_time - perform_action_time
+        Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
+        Globals.avg_move_time += move_time - pheromone_drop_time
+        Globals.avg_perform_action_time += perform_action_time - move_time
+        Globals.avg_placement_time += end_time - perform_action_time
         Globals.entire_time += end_time - start_time
         Globals.ant_operations += 1
 
     def move_towards_objective(self, object_sighted, x, y):
         if object_sighted is None:
-            print('No object sighted, exploring')
             self.move_to_explore()
             return
         self.turn_towards(x, y)

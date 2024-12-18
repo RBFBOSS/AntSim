@@ -114,13 +114,11 @@ class Worker(Ant):
                                  and self.destination == Action.FOOD) or
                                     (self.matrix[i][j].target == PheromoneType.TO_COLONY
                                      and self.destination == Action.COLONY)):
-                                print('------------------------------')
                                 if self.matrix[i][j].creator == self.colony_id:
                                     # Globals.avg_pheromone_creation_time += self.matrix[i][j].creation_time
                                     # Globals.new_count += 1
                                     # if (Globals.global_time_frame - self.matrix[i][j].creation_time <
                                     #         Globals.how_young_pheromone_to_consider):
-                                    print('XXXXXXXXXXXXXXXXXXXXXX')
                                     # if pheromones_checked < Globals.pheromones_to_check:
                                     #     pheromones_checked += 1
                                     # else:
@@ -161,8 +159,8 @@ class Worker(Ant):
                                     #     print('Pheromone was too old')
                             # elif self.matrix[i][j].m_type == MarkerType.ANT:
                             #     object_sighted = self.matrix[i][j]
-        if not e_bun and gasit_feromon:
-            print('Not found a better pheromone')
+        # if not e_bun and gasit_feromon:
+        #     print('Not found a better pheromone')
         if object_sighted is not None:
             self.heading_towards_objective = True
             self.last_objective_sighted = object_sighted
@@ -171,7 +169,6 @@ class Worker(Ant):
         return object_sighted, object_i, object_j
 
     def move_to_explore(self):
-        print('Exploring')
         movement_change = True if random.random() < Globals.exploration_rate else False
         if movement_change:
             self.slightly_change_direction()
