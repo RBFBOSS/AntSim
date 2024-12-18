@@ -39,16 +39,26 @@ class Simulation:
         for colony in Globals.colonies:
             colony.update()
         self.update_count += 1
+        collision_found = False
+        for pheromone in Globals.pheromones:
+            if collision_found:
+                break
+            for pheromone1 in Globals.pheromones:
+                if (pheromone.x == pheromone1.x and pheromone.y == pheromone1.y
+                        and pheromone.creation_time != pheromone1.creation_time):
+                    print('PHEROMONE COLLISION')
+                    collision_found = True
+                    break
         if self.update_count >= Globals.update_pheromones_count:
             self.delete_old_pheromones()
             self.update_count = 0
-            print('===============================')
-            print('===============================')
-            print(Globals.avg_pheromone_creation_time / Globals.new_count)
-            print('===============================')
-            print('===============================')
-            Globals.avg_pheromone_creation_time = 0
-            Globals.new_count = 1
+            # print('===============================')
+            # print('===============================')
+            # print(Globals.avg_pheromone_creation_time / Globals.new_count)
+            # print('===============================')
+            # print('===============================')
+            # Globals.avg_pheromone_creation_time = 0
+            # Globals.new_count = 1
             # print("Ant stats:")
             # print('Object sighted -> ', Globals.avg_object_sighted_time / Globals.ant_operations)
             # # print('Move -> ', Globals.avg_move_time / Globals.ant_operations)

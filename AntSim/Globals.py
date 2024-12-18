@@ -3,12 +3,12 @@ class Globals:
     pheromone_drop_rate = 3
     update_pheromones_count = 10
     pheromone_lifespan = 7
-    ant_FOV = 10
-    pheromone_drop_FOV = 10
+    ant_FOV = 5
+    pheromone_drop_FOV = 3
     exploration_rate = 0.005
-    col1_ants_generated = 1
+    col1_ants_generated = 750
     col2_ants_generated = 0
-    delay_rate = 0.01
+    delay_rate = 0
     avg_object_sighted_time = 0
     avg_pheromone_drop_time = 0
     avg_move_time = 0

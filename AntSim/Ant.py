@@ -56,23 +56,26 @@ class Ant(ABC):
             if self.matrix[y][x] is None:
                 return True, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
+                Ant.delete_pheromone_on_position(x, y)
                 return True, x, y
 
         elif purpose == 'pheromone':
             if self.matrix[y][x] is None:
                 return True, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
-                if (((self.matrix[y][x].target == PheromoneType.TO_COLONY
-                    and self.last_visited_object.m_type == MarkerType.COLONY)
+                if ((self.matrix[y][x].target == PheromoneType.TO_COLONY
+                     and self.last_visited_object.m_type == MarkerType.COLONY)
                         or (self.matrix[y][x].target == PheromoneType.TO_FOOD
-                            and self.last_visited_object.m_type == MarkerType.FOOD))
-                        and Globals.global_time_frame - self.matrix[y][x].creation_time >
-                        Globals.time_until_pheromone_override):
+                            and self.last_visited_object.m_type == MarkerType.FOOD)):
                     print("Overriding pheromone")
-                    if self.last_pheromone_distance < self.matrix[y][x].distance:
-                        self.last_pheromone_distance = self.matrix[y][x].distance
-                        Ant.delete_pheromone_on_position(x, y)
-                        return True, x, y
+                    if Globals.global_time_frame - self.matrix[y][x].creation_time > \
+                            Globals.time_until_pheromone_override:
+                        if self.last_pheromone_distance < self.matrix[y][x].distance:
+                            self.last_pheromone_distance = self.matrix[y][x].distance
+                            Ant.delete_pheromone_on_position(x, y)
+                            return True, x, y
+                else:
+                    print('Found irrelevant pheromone')
 
         return False, -1, -1
 
@@ -84,6 +87,14 @@ class Ant(ABC):
             return x, y
         elif purpose == 'pheromone':
             for dist in range(0, Globals.pheromone_drop_FOV):
+                done, x, y = self.find_and_clear_precise_spot_for_drop(self.x,
+                                                                       self.y, purpose)
+                if done:
+                    return x, y
+                else:
+                    if x != -1 and y != -1:
+                        alternative_x = x
+                        alternative_y = y
                 above = int(max(0, self.y - dist))
                 below = int(min(899, self.y + dist))
                 left = int(max(0, self.x - dist))
@@ -99,6 +110,8 @@ class Ant(ABC):
                                 alternative_y = y
 
             if alternative_x != -1 and alternative_y != -1:
+                print('Ant -> ', self.last_visited_object.m_type)
+                print('Pheromone -> ', self.matrix[alternative_y][alternative_x].target)
                 Ant.delete_pheromone_on_position(alternative_x, alternative_y)
             return alternative_x, alternative_y
 
@@ -128,7 +141,7 @@ class Ant(ABC):
                                                            Globals.global_time_frame)
             self.pheromones.append(Pheromone(placement_x, placement_y, self.matrix,
                                              PheromoneType.TO_FOOD, self.colony_id,
-                                             self.time_of_last_visit,
+                                             Globals.global_time_frame - self.time_of_last_visit,
                                              Globals.global_time_frame))
         elif self.last_visited_object.m_type == MarkerType.COLONY \
                 and self.last_visited_object.creator == self.colony_id:
@@ -139,7 +152,7 @@ class Ant(ABC):
                                                            Globals.global_time_frame)
             self.pheromones.append(Pheromone(placement_x, placement_y, self.matrix,
                                              PheromoneType.TO_COLONY, self.colony_id,
-                                             self.time_of_last_visit,
+                                             Globals.global_time_frame - self.time_of_last_visit,
                                              Globals.global_time_frame))
 
     def slightly_change_direction(self) -> None:
@@ -238,7 +251,9 @@ class Ant(ABC):
 
     def update(self):
         start_time = time.perf_counter() * 100000
-        self.matrix[self.last_y][self.last_x] = None
+        if self.matrix[self.last_y][self.last_x] is not None:
+            if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
+                Ant.delete_pheromone_on_position(self.last_x, self.last_y)
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:
@@ -251,8 +266,6 @@ class Ant(ABC):
                 y = self.last_objective_sighted_y
         object_sighted_time = time.perf_counter() * 100000
         if object_sighted is None:
-            if self.last_visited_object.m_type == MarkerType.COLONY:
-                print('OOOOOOOOOOOOOOOOOOOOOO')
             if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
                 self.last_pheromone_distance = -1
             else:
@@ -286,6 +299,7 @@ class Ant(ABC):
 
     def move_towards_objective(self, object_sighted, x, y):
         if object_sighted is None:
+            print('No object sighted, exploring')
             self.move_to_explore()
             return
         self.turn_towards(x, y)
@@ -308,6 +322,8 @@ class Ant(ABC):
         #         self.heading_y = -1
         #     else:
         #         self.heading_y = 0
+        aux_x = self.x
+        aux_y = self.y
         if x > self.x:
             self.heading_x = 1
         elif x < self.x:
@@ -320,7 +336,10 @@ class Ant(ABC):
             self.heading_y = -1
         else:
             self.heading_y = 0
+        if aux_x != self.x or aux_y != self.y:
+            print('Direction changed')
         if random.random() < Globals.chance_to_deviate_from_path:
+            print('============DEVIATION ERROR======================')
             self.slightly_change_direction()
 
     @abstractmethod
