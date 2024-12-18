@@ -1,12 +1,27 @@
 from Colony import Colony
 from FoodSource import FoodSource
 from Globals import Globals
+import threading
+import time
 
 
 class Simulation:
     def __init__(self):
         self.update_count = 0
         Globals.initialize_matrix()
+        self.pheromone_thread = threading.Thread(target=self.run_pheromone_cleanup)
+        self.pheromone_thread.daemon = True
+        self.pheromone_thread.start()
+
+    def run_pheromone_cleanup(self):
+        while True:
+            if not Globals.pause_event.is_set():
+                Globals.waiting_event.set()
+                self.delete_old_pheromones()
+                time.sleep(0.01)
+            else:
+                Globals.waiting_event.clear()
+                time.sleep(0.01)
 
     @staticmethod
     def add_colony(x: int, y: int) -> None:
@@ -40,7 +55,7 @@ class Simulation:
             colony.update()
         self.update_count += 1
         if self.update_count >= Globals.update_pheromones_count:
-            self.delete_old_pheromones()
+            # self.delete_old_pheromones()
             self.update_count = 0
             print("Ant stats:")
             print('Object sighted -> ', Globals.avg_object_sighted_time / Globals.ant_operations)

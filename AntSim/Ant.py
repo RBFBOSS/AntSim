@@ -56,7 +56,7 @@ class Ant(ABC):
             if self.matrix[y][x] is None:
                 return True, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
-                Ant.delete_pheromone_on_position(x, y)
+                # Ant.delete_pheromone_on_position(x, y)
                 return True, x, y
 
         elif purpose == 'pheromone':
@@ -71,7 +71,7 @@ class Ant(ABC):
                             Globals.time_until_pheromone_override:
                         if self.last_pheromone_distance < self.matrix[y][x].distance:
                             self.last_pheromone_distance = self.matrix[y][x].distance
-                            Ant.delete_pheromone_on_position(x, y)
+                            # Ant.delete_pheromone_on_position(x, y)
                             return True, x, y
                 # else:
                 #     print('Found irrelevant pheromone')
@@ -111,15 +111,15 @@ class Ant(ABC):
             if alternative_x != -1 and alternative_y != -1:
                 print('Ant -> ', self.last_visited_object.m_type)
                 print('Pheromone -> ', self.matrix[alternative_y][alternative_x].target)
-                Ant.delete_pheromone_on_position(alternative_x, alternative_y)
+                # Ant.delete_pheromone_on_position(alternative_x, alternative_y)
             return alternative_x, alternative_y
 
     @staticmethod
     def delete_pheromone_on_position(x: int, y: int):
         for i in range(len(Globals.pheromones)):
             if Globals.pheromones[i].x == x and Globals.pheromones[i].y == y:
-                # Globals.pheromones[i].clear()
-                # Globals.pheromones.pop(i)
+                Globals.pheromones[i].clear()
+                Globals.pheromones.pop(i)
                 break
 
     def drop_pheromone(self) -> None:
@@ -250,9 +250,9 @@ class Ant(ABC):
 
     def update(self):
         start_time = time.perf_counter() * 100000
-        if self.matrix[self.last_y][self.last_x] is not None:
-            if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
-                Ant.delete_pheromone_on_position(self.last_x, self.last_y)
+        # if self.matrix[self.last_y][self.last_x] is not None:
+        #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
+        #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:
