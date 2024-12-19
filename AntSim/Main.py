@@ -7,8 +7,8 @@ from Simulation import Simulation
 w = 20
 h = 20
 m = [['.' for _ in range(w)] for _ in range(h)]
-y = 6
-x = 6
+y = 12
+x = 7
 above = int(max(0, y - Globals.ant_FOV))
 below = int(min(20, y + Globals.ant_FOV + 1))
 left = int(max(0, x - Globals.ant_FOV))
@@ -18,7 +18,7 @@ print('below', below)
 print('right', right)
 print('left', left)
 heading_y = 0
-heading_x = -1
+heading_x = 1
 
 for i in range(above, below):
     for j in range(left, right):
@@ -69,8 +69,8 @@ if first_checked_position_y == above:
                         print(m[f][g], " ", end=' ')
                     print()
                 m[i + above][j + left] = '0'
-                if i + j != below - above:
-                    m[above - below - j][right - i - 1] = '0'
+                if i + j != below - above - 1:
+                    m[below - j - 1][right - i - 1] = '0'
     else:
         for i in range(0, y + 1 - above):
             for j in range(x - left, right - left - i):
@@ -110,7 +110,7 @@ elif first_checked_position_y == below:
                     print()
                 m[below - i - 1][j + left] = '0'
                 if i != j:
-                    m[above + j][left + i] = '0'
+                    m[above + j][right - i - 1] = '0'
     else:
         for i in range(0, below - y):
             for j in range(x - left, right - left - i):
@@ -136,7 +136,7 @@ else:
                         print(m[f][g], " ", end=' ')
                     print()
                 m[i + above][j + left] = '0'
-                if i != y:
+                if i != 0:
                     m[below - i - 1][j + left] = '0'
     else:
         for j in range(right - x - 1, 0, -1):
@@ -149,7 +149,7 @@ else:
                         print(m[f][g], " ", end=' ')
                     print()
                 m[i + y][j + x] = '0'
-                if i != y: //CONTINUE HERE
+                if i != 0:
                     m[y - i][j + x] = '0'
 
 m[y][x] = 'X'
