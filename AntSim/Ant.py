@@ -256,7 +256,8 @@ class Ant(ABC):
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:
-            if self.last_objective_sighted_x == self.x and self.last_objective_sighted_y == self.y:
+            if (abs(self.last_objective_sighted_x - self.x) < Globals.speed
+                    and abs(self.last_objective_sighted_y - self.y) < Globals.speed):
                 self.heading_towards_objective = False
                 object_sighted, y, x = self.object_sighted()
             else:
@@ -265,11 +266,23 @@ class Ant(ABC):
                 y = self.last_objective_sighted_y
         object_sighted_time = time.perf_counter() * 100000
         if object_sighted is None:
+            if (abs(self.last_objective_sighted_x - self.x) >= Globals.speed
+                    and abs(self.last_objective_sighted_y - self.y) >= Globals.speed):
+                self.heading_towards_objective = True
+                object_sighted = self.last_objective_sighted
+                self.time_no_pheromone_sighted -= 0.01
+            else:
+                self.last_objective_sighted = None
+            haide = random.randint(0, 2)
+            print(f'OOOOOO{haide}')
             if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
                 self.last_pheromone_distance = -1
             else:
                 self.time_no_pheromone_sighted += 0.01
             self.time_no_pheromone_sighted = 0
+        else:
+            haide = random.randint(0, 2)
+            print(f'++++++')
         self.pheromone_drop_count += 1
         if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
             self.drop_pheromone()
