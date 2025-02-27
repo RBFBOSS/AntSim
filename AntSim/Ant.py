@@ -349,10 +349,10 @@ class Ant(ABC):
         pass
 
     def get_first_angle_to_check(self):
-        above = int(max(0, self.y - Globals.ant_FOV))
-        below = int(min(899, self.y + Globals.ant_FOV))
-        left = int(max(0, self.x - Globals.ant_FOV))
-        right = int(min(1519, self.x + Globals.ant_FOV))
+        above = self.y - Globals.ant_FOV
+        below = self.y + Globals.ant_FOV + 1
+        left = self.x - Globals.ant_FOV
+        right = self.x + Globals.ant_FOV + 1
         if self.heading_y == -1:
             if self.heading_x == 0:
                 return self.x, above
