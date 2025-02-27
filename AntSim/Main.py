@@ -7,8 +7,8 @@ from Simulation import Simulation
 w = 20
 h = 20
 m = [['.' for _ in range(w)] for _ in range(h)]
-y = 3
-x = 18
+y = 13
+x = 15
 above = y - Globals.ant_FOV
 below = y + Globals.ant_FOV + 1
 left = x - Globals.ant_FOV
@@ -17,8 +17,8 @@ print('above', above)
 print('below', below)
 print('right', right)
 print('left', left)
-heading_y = 1
-heading_x = -1
+heading_y = 0
+heading_x = 1
 sleep_time = 0.25
 
 for i in range(max(above, 0), min(below, h)):
@@ -92,8 +92,8 @@ if first_checked_position_y == above:
                     m[i + above][2 * x - j - left] = '0'
 elif first_checked_position_y == below:
     if first_checked_position_x == left:
-        for i in range(0, below - y):
-            for j in range(i, x + 1 - left):
+        for i in range(0, Globals.ant_FOV + 1):
+            for j in range(i, Globals.ant_FOV + 1):
                 sleep(sleep_time)
                 m[y][x] = 'X'
 
@@ -101,12 +101,13 @@ elif first_checked_position_y == below:
                     for g in range(w):
                         print(m[f][g], " ", end=' ')
                     print()
-                m[below - i - 1][j + left] = '0'
-                if i + j != below - above:
+                if 0 < below - i - 1 < h and 0 < j + left < w:
+                    m[below - i - 1][j + left] = '0'
+                if i + j != below - above and 0 < below - j - 1 < h and 0 < i + left < w:
                     m[below - j - 1][left + i] = '0'
     elif first_checked_position_x == right:
-        for i in range(0, below - y):
-            for j in range(right - left - i - 1, x - left - 1, -1):
+        for i in range(0, Globals.ant_FOV + 1):
+            for j in range(2 * Globals.ant_FOV - i, Globals.ant_FOV - 1, -1):
                 sleep(sleep_time)
                 m[y][x] = 'X'
 
@@ -114,12 +115,13 @@ elif first_checked_position_y == below:
                     for g in range(w):
                         print(m[f][g], " ", end=' ')
                     print()
-                m[below - i - 1][j + left] = '0'
-                if i != j:
+                if 0 < below - i - 1 < h and 0 < j + left < w:
+                    m[below - i - 1][j + left] = '0'
+                if i != j and 0 < above + j < h and 0 < right - i - 1 < w:
                     m[above + j][right - i - 1] = '0'
     else:
-        for i in range(0, below - y):
-            for j in range(x - left, right - left - i):
+        for i in range(0, Globals.ant_FOV + 1):
+            for j in range(Globals.ant_FOV, 2 * Globals.ant_FOV + 1 - i):
                 sleep(sleep_time)
                 m[y][x] = 'X'
 
@@ -127,13 +129,14 @@ elif first_checked_position_y == below:
                     for g in range(w):
                         print(m[f][g], " ", end=' ')
                     print()
-                m[below - i - 1][j + left] = '0'
-                if j != x - left:
-                    m[below - i - 1][2*x - j - left] = '0'
+                if 0 < below - i - 1 < h and 0 < j + left < w:
+                    m[below - i - 1][j + left] = '0'
+                if j != x - left and 0 < below - i - 1 < h and 0 < 2 * x - j - left < w:
+                    m[below - i - 1][2 * x - j - left] = '0'
 else:
     if first_checked_position_x == left:
-        for j in range(0, x - left):
-            for i in range(0, Globals.ant_FOV):
+        for j in range(0, Globals.ant_FOV):
+            for i in range(0, Globals.ant_FOV - j + 1):
                 sleep(sleep_time)
                 m[y][x] = 'X'
 
@@ -142,12 +145,12 @@ else:
                         print(m[f][g], " ", end=' ')
                     print()
                 print('MMMMMMMMMMMMMMMMMMMMMMMMMM')
-                if i + y < 20:
+                if 0 < i + y < 20 and 0 < j + left < 20:
                     m[i + y][j + left] = '0'
-                if i != 0 and y - i > 0:
+                if i != 0 and 0 < y - i < 20 and 0 < j + left < 20:
                     m[y - i][j + left] = '0'
     else:
-        for j in range(right - x - 1, 0, -1):
+        for j in range(Globals.ant_FOV, 0, -1):
             for i in range(0, j + 1):
                 sleep(sleep_time)
                 m[y][x] = 'X'
@@ -157,9 +160,9 @@ else:
                         print(m[f][g], " ", end=' ')
                     print()
                 print('MMMMMMMMMMMMMMMMMMMMMMMMMM')
-                if i + y < 20:
+                if 0 < i + y < 20 and 0 < j + x < 20:
                     m[i + y][j + x] = '0'
-                if i != 0 and y - i > 0:
+                if i != 0 and 0 < y - i < 20 and 0 < j + x < 20:
                     m[y - i][j + x] = '0'
 
 m[y][x] = 'X'
