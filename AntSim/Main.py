@@ -1,3 +1,5 @@
+from time import sleep
+
 from Globals import Globals
 from Graphics import Graphics
 from Simulation import Simulation
@@ -12,12 +14,12 @@ col1 = sim.get_colony(1)
 for _ in range(Globals.col2_ants_generated):
     col1.produce_ant('soldier')
 # sim.add_food_source(1300, 200)
-sim.add_food_source(650, 350)
-sim.add_food_source(350, 350)
-# sim.add_food_source(650, 650)
-# sim.add_food_source(350, 650)
-# sim.add_food_source(700, 500)
-# sim.add_food_source(300, 500)
-# sim.add_food_source(500, 700)
-# sim.add_food_source(500, 300)
+sim.add_food_source(700, 300)
+sim.add_food_source(300, 300)
+sim.add_food_source(700, 700)
+sim.add_food_source(300, 700)
+sim.add_food_source(800, 500)
+sim.add_food_source(200, 500)
+sim.add_food_source(500, 800)
+sim.add_food_source(500, 200)
 graphics = Graphics(sim)

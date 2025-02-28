@@ -65,54 +65,49 @@ class Worker(Ant):
                 self.heading_y = -self.heading_y
                 self.heading_x = -self.heading_x
 
-    def object_sighted(self):
-        above = int(max(0, self.y - Globals.ant_FOV))
-        below = int(min(899, self.y + Globals.ant_FOV))
-        left = int(max(0, self.x - Globals.ant_FOV))
-        right = int(min(1519, self.x + Globals.ant_FOV))
+    def look_for_object_at_precise_spot(self, i, j):
+        print(i, j)
         object_sighted = None
         object_i = -1
         object_j = -1
-        pheromones_checked = 0
-        e_bun = False
-        gasit_feromon = False
-        for i in range(above, below):
-            for j in range(left, right):
-                if i != self.y or j != self.x:
-                    if self.matrix[i][j] is not None:
-                        if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
-                            Globals.pheromones_sighted += 1
-                        elif self.matrix[i][j].m_type == MarkerType.COLONY:
-                            Globals.colonies_sighted += 1
-                        elif self.matrix[i][j].m_type == MarkerType.ANT:
-                            Globals.ants_sighted += 1
-                        elif self.matrix[i][j].m_type == MarkerType.FOOD:
-                            Globals.food_sources_sighted += 1
-                        Globals.objects_sighted += 1
-                        if self.matrix[i][j].m_type == MarkerType.COLONY \
-                                and self.matrix[i][j].creator == self.colony_id \
-                                and self.destination == Action.COLONY:
-                            object_sighted = copy.deepcopy(self.matrix[i][j])
-                            self.heading_towards_objective = True
-                            self.last_objective_sighted = object_sighted
-                            self.last_objective_sighted_x = j
-                            self.last_objective_sighted_y = i
-                            return object_sighted, i, j
-                        if self.matrix[i][j].m_type == MarkerType.FOOD \
-                                and not self.is_carrying_food \
-                                and self.destination == Action.FOOD:
-                            object_sighted = copy.deepcopy(self.matrix[i][j])
-                            self.heading_towards_objective = True
-                            self.last_objective_sighted = object_sighted
-                            self.last_objective_sighted_x = j
-                            self.last_objective_sighted_y = i
-                            return object_sighted, i, j
-                        elif self.matrix[i][j].m_type == MarkerType.PHEROMONE \
-                                and ((self.matrix[i][j].target == PheromoneType.TO_FOOD
-                                      and self.destination == Action.FOOD) or
-                                     (self.matrix[i][j].target == PheromoneType.TO_COLONY
-                                      and self.destination == Action.COLONY)) \
-                                and self.matrix[i][j].creator == self.colony_id:
+        if i != self.y or j != self.x:
+            if self.matrix[i][j] is not None:
+                if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
+                    Globals.pheromones_sighted += 1
+                elif self.matrix[i][j].m_type == MarkerType.COLONY:
+                    Globals.colonies_sighted += 1
+                elif self.matrix[i][j].m_type == MarkerType.ANT:
+                    Globals.ants_sighted += 1
+                elif self.matrix[i][j].m_type == MarkerType.FOOD:
+                    Globals.food_sources_sighted += 1
+                Globals.objects_sighted += 1
+                if self.matrix[i][j].m_type == MarkerType.COLONY \
+                        and self.matrix[i][j].creator == self.colony_id \
+                        and self.destination == Action.COLONY:
+                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                    self.heading_towards_objective = True
+                    self.last_objective_sighted = object_sighted
+                    self.last_objective_sighted_x = j
+                    self.last_objective_sighted_y = i
+                    return object_sighted, i, j
+                if self.matrix[i][j].m_type == MarkerType.FOOD \
+                        and not self.is_carrying_food \
+                        and self.destination == Action.FOOD:
+                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                    self.heading_towards_objective = True
+                    self.last_objective_sighted = object_sighted
+                    self.last_objective_sighted_x = j
+                    self.last_objective_sighted_y = i
+                    return object_sighted, i, j
+                elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
+                    # print('ANT -> ', self.destination)
+                    # print('PHEROMONE -> ', self.matrix[i][j].target)
+                    if ((self.matrix[i][j].target == PheromoneType.TO_FOOD
+                         and self.destination == Action.FOOD) or
+                            (self.matrix[i][j].target == PheromoneType.TO_COLONY
+                             and self.destination == Action.COLONY)):
+                        print('XXXXXXXXXXXXXXXXXXX')
+                        if self.matrix[i][j].creator == self.colony_id:
                             # Globals.avg_pheromone_creation_time += self.matrix[i][j].creation_time
                             # Globals.new_count += 1
                             # if (Globals.global_time_frame - self.matrix[i][j].creation_time <
@@ -126,6 +121,16 @@ class Worker(Ant):
                             if self.last_pheromone_distance == -1 \
                                     or self.last_pheromone_distance > \
                                     self.matrix[i][j].distance:
+                                if gasit_feromon:
+                                    e_bun = True
+                                    # if object_sighted is not None:
+                                    #     if object_sighted.distance > self.matrix[i][j].distance:
+                                    #         object_sighted = copy.deepcopy(self.matrix[i][j])
+                                    #         object_i = i
+                                    #         object_j = j
+                                    #         self.last_pheromone_distance =
+                                    #         copy.deepcopy(self.matrix[i][j].distance)
+                                    # else:
                                 object_sighted = copy.deepcopy(self.matrix[i][j])
                                 object_i = i
                                 object_j = j
@@ -145,10 +150,133 @@ class Worker(Ant):
                                 #               self.matrix[i][j].distance)
                             # else:
                             #     print('Pheromone was too old')
-                        # elif self.matrix[i][j].m_type == MarkerType.ANT:
-                        #     object_sighted = self.matrix[i][j]
-        # if not e_bun and gasit_feromon:
-        #     print('Not found a better pheromone')
+                    # elif self.matrix[i][j].m_type == MarkerType.ANT:
+                            #     object_sighted = self.matrix[i][j]
+        return object_sighted, object_i, object_j
+
+    def object_sighted(self):
+        above = self.y - Globals.ant_FOV
+        below = self.y + Globals.ant_FOV + 1
+        left = self.x - Globals.ant_FOV
+        right = self.x + Globals.ant_FOV + 1
+        object_sighted = None
+        object_i = -1
+        object_j = -1
+        pheromones_checked = 0
+        e_bun = False
+        gasit_feromon = False
+        first_checked_position_x, first_checked_position_y = self.get_first_angle_to_check()
+        if first_checked_position_y == above:
+            if first_checked_position_x == left:
+                for i in range(0, Globals.ant_FOV + 1):
+                    for j in range(i, Globals.ant_FOV + 1):
+                        if 0 < i + above < Globals.height and 0 < j + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if i != j and 0 < j + above < Globals.height and 0 < i + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(j + above, i + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+            elif first_checked_position_x == right:
+                for i in range(0, Globals.ant_FOV + 1):
+                    for j in range(2 * Globals.ant_FOV - i, Globals.ant_FOV - 1, -1):
+                        if 0 < i + above < Globals.height and 0 < j + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if (i + j != below - above - 1 and 0 < below - j - 1 < Globals.height
+                                and 0 < right - i - 1 < Globals.width):
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(below - j - 1, right - i - 1)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+            else:
+                for i in range(0, Globals.ant_FOV + 1):
+                    for j in range(Globals.ant_FOV, 2 * Globals.ant_FOV - i + 1):
+                        if 0 < i + above < Globals.height and 0 < j + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if (j != self.x - left and 0 < i + above < Globals.height
+                                and 0 < 2 * self.x - j - left < Globals.width):
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(i + above, 2 * self.x - j - left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+        elif first_checked_position_y == below:
+            if first_checked_position_x == left:
+                for i in range(0, Globals.ant_FOV + 1):
+                    for j in range(i, Globals.ant_FOV + 1):
+                        if 0 < below - i - 1 < Globals.height and 0 < j + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(below - i - 1, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if (i + j != below - above and 0 < below - j - 1 < Globals.height
+                                and 0 < i + left < Globals.width):
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(below - j - 1, i + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+            elif first_checked_position_x == right:
+                for i in range(0, Globals.ant_FOV + 1):
+                    for j in range(2 * Globals.ant_FOV - i, Globals.ant_FOV - 1, -1):
+                        if 0 < below - i - 1 < Globals.height and 0 < j + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(below - i - 1, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if i != j and 0 < above + j < Globals.height and 0 < right - i - 1 < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(above + j, right - i - 1)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+            else:
+                for i in range(0, Globals.ant_FOV + 1):
+                    for j in range(Globals.ant_FOV, 2 * Globals.ant_FOV + 1 - i):
+                        if 0 < below - i - 1 < Globals.height and 0 < j + left < Globals.width:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(below - i - 1, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if (j != self.x - left and 0 < below - i - 1 < Globals.height
+                                and 0 < 2 * self.x - j - left < Globals.width):
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(below - i - 1, 2 * self.x - j - left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+        else:
+            if first_checked_position_x == left:
+                for j in range(0, Globals.ant_FOV):
+                    for i in range(0, Globals.ant_FOV - j + 1):
+                        if 0 < i + self.y < 20 and 0 < j + left < 20:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(i + self.y, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if i != 0 and 0 < self.y - i < 20 and 0 < j + left < 20:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(self.y - i, j + left)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+            else:
+                for j in range(Globals.ant_FOV, 0, -1):
+                    for i in range(0, j + 1):
+                        if 0 < i + self.y < 20 and 0 < j + self.x < 20:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(i + self.y, j + self.x)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
+                        if i != 0 and 0 < self.y - i < 20 and 0 < j + self.x < 20:
+                            object_sighted, object_i, object_j = \
+                                self.look_for_object_at_precise_spot(self.y - i, j + self.x)
+                        if object_sighted is not None:
+                            return object_sighted, object_i, object_j
         if object_sighted is not None:
             self.heading_towards_objective = True
             self.last_objective_sighted = object_sighted

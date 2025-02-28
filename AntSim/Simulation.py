@@ -69,11 +69,11 @@ class Simulation:
             # print('Food sources sighted -> ', Globals.food_sources_sighted)
             # print('Objects sighted -> ', Globals.objects_sighted)
             # print('Entire time -> ', Globals.entire_time / Globals.ant_operations)
-            Globals.objects_sighted = 0
-            Globals.pheromones_sighted = 0
-            Globals.colonies_sighted = 0
-            Globals.ants_sighted = 0
-            Globals.food_sources_sighted = 0
+            # Globals.objects_sighted = 0
+            # Globals.pheromones_sighted = 0
+            # Globals.colonies_sighted = 0
+            # Globals.ants_sighted = 0
+            # Globals.food_sources_sighted = 0
             # print('-----------------------------------')
 
     @staticmethod
