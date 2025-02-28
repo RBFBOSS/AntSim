@@ -66,6 +66,7 @@ class Worker(Ant):
                 self.heading_x = -self.heading_x
 
     def look_for_object_at_precise_spot(self, i, j):
+        print(i, j)
         object_sighted = None
         object_i = -1
         object_j = -1
