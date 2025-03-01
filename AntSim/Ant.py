@@ -256,6 +256,8 @@ class Ant(ABC):
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:
+            print("Heading towards objective")
+            print(self.destination)
             if (abs(self.last_objective_sighted_x - self.x) < Globals.speed
                     and abs(self.last_objective_sighted_y - self.y) < Globals.speed):
                 self.heading_towards_objective = False
@@ -274,7 +276,7 @@ class Ant(ABC):
             else:
                 self.last_objective_sighted = None
             haide = random.randint(0, 2)
-            print(f'OOOOOO{haide}')
+            # print(f'OOOOOO{haide}')
             if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
                 self.last_pheromone_distance = -1
             else:
@@ -282,7 +284,7 @@ class Ant(ABC):
             self.time_no_pheromone_sighted = 0
         else:
             haide = random.randint(0, 2)
-            print(f'++++++')
+            # print(f'++++++')
         self.pheromone_drop_count += 1
         if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
             self.drop_pheromone()

@@ -12,9 +12,9 @@ class Globals:
     ant_FOV = 3
     pheromone_drop_FOV = 3
     exploration_rate = 0.005
-    col1_ants_generated = 100
+    col1_ants_generated = 1
     col2_ants_generated = 0
-    delay_rate = 0
+    delay_rate = 0.01
     avg_object_sighted_time = 0
     avg_pheromone_drop_time = 0
     avg_move_time = 0
