@@ -48,6 +48,7 @@ class Simulation:
                 return pheromone
 
     def update(self):
+        Globals.ant_FOVs = []
         Globals.increment_time_frame()
         # if Globals.global_time_frame >= 10:
         #     print('100 seconds passed')

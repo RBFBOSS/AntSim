@@ -85,9 +85,11 @@ class Ant(ABC):
             done, x, y = self.find_and_clear_precise_spot_for_drop(self.x, self.y, purpose)
             return x, y
         elif purpose == 'pheromone':
+            done, x, y = self.find_and_clear_precise_spot_for_drop(self.x,
+                                                                   self.y, purpose)
+            if done:
+                return x, y
             for dist in range(0, Globals.pheromone_drop_FOV):
-                done, x, y = self.find_and_clear_precise_spot_for_drop(self.x,
-                                                                       self.y, purpose)
                 if done:
                     return x, y
                 else:
@@ -254,10 +256,9 @@ class Ant(ABC):
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
         #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
         if not self.heading_towards_objective:
+            print('Exploring')
             object_sighted, y, x = self.object_sighted()
         else:
-            print("Heading towards objective")
-            print(self.destination)
             if (abs(self.last_objective_sighted_x - self.x) < Globals.speed
                     and abs(self.last_objective_sighted_y - self.y) < Globals.speed):
                 self.heading_towards_objective = False
@@ -267,7 +268,7 @@ class Ant(ABC):
                 x = self.last_objective_sighted_x
                 y = self.last_objective_sighted_y
         # object_sighted_time = time.perf_counter() * 100000
-        if object_sighted is None:
+        if object_sighted is None and self.last_objective_sighted is not None:
             if (abs(self.last_objective_sighted_x - self.x) >= Globals.speed
                     and abs(self.last_objective_sighted_y - self.y) >= Globals.speed):
                 self.heading_towards_objective = True

@@ -3,18 +3,19 @@ import time
 
 
 class Globals:
+    ant_FOVs = []
     pause_event = threading.Event()
     waiting_event = threading.Event()
     global_time_frame = 0.0
     pheromone_drop_rate = 3
     update_pheromones_count = 1
     pheromone_lifespan = 5
-    ant_FOV = 3
-    pheromone_drop_FOV = 3
+    ant_FOV = 10
+    pheromone_drop_FOV = 2
     exploration_rate = 0.005
     col1_ants_generated = 1
     col2_ants_generated = 0
-    delay_rate = 0.01
+    delay_rate = 0.005
     avg_object_sighted_time = 0
     avg_pheromone_drop_time = 0
     avg_move_time = 0
