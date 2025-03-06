@@ -48,11 +48,80 @@ class Ant(ABC):
         self.last_objective_sighted_x = -1
         self.last_objective_sighted_y = -1
 
+    def update(self):
+        # start_time = time.perf_counter() * 100000
+        # if self.matrix[self.last_y][self.last_x] is not None:
+        #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
+        #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
+        if not self.heading_towards_objective:
+            print('Exploring')
+            object_sighted, y, x = self.object_sighted()
+        else:
+            if ((abs(self.last_objective_sighted_x - self.x) < Globals.speed
+                    and abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
+                    (abs(self.last_objective_sighted_x - self.x) > Globals.ant_FOV)
+                    or (abs(self.last_objective_sighted_y - self.y) > Globals.ant_FOV)):
+                self.heading_towards_objective = False
+                object_sighted, y, x = self.object_sighted()
+            else:
+                print('Heading towards objective')
+                object_sighted, y, x = self.object_sighted()
+                if object_sighted is None:
+                    object_sighted = self.last_objective_sighted
+                    x = self.last_objective_sighted_x
+                    y = self.last_objective_sighted_y
+                print(f'Heading towards {y} {x}')
+        # object_sighted_time = time.perf_counter() * 100000
+        if object_sighted is None and self.last_objective_sighted is not None:
+            if (abs(self.last_objective_sighted_x - self.x) >= Globals.speed
+                    and abs(self.last_objective_sighted_y - self.y) >= Globals.speed):
+                self.heading_towards_objective = True
+                object_sighted = self.last_objective_sighted
+                self.time_no_pheromone_sighted -= 0.01
+            else:
+                self.last_objective_sighted = None
+            haide = random.randint(0, 2)
+            # print(f'OOOOOO{haide}')
+            if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
+                self.last_pheromone_distance = -1
+            else:
+                self.time_no_pheromone_sighted += 0.01
+            self.time_no_pheromone_sighted = 0
+        else:
+            haide = random.randint(0, 2)
+            # print(f'++++++')
+        self.pheromone_drop_count += 1
+        if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
+            self.drop_pheromone()
+            self.pheromone_drop_count = 0
+        # pheromone_drop_time = time.perf_counter() * 100000
+        self.move(object_sighted, x, y)
+        # move_time = time.perf_counter() * 100000
+        self.perform_action()
+        # perform_action_time = time.perf_counter() * 100000
+        placement_x, placement_y = self.find_and_clear_spot_for_drop('ant')
+        self.last_y = placement_y
+        self.last_x = placement_x
+        if placement_x != -1 and placement_y != -1:
+            self.matrix[placement_y][placement_x] = Marker(MarkerType.ANT, None,
+                                                           self.colony_id,
+                                                           Globals.global_time_frame,
+                                                           Globals.global_time_frame)
+        # end_time = time.perf_counter() * 100000
+        # Globals.avg_object_sighted_time += object_sighted_time - start_time
+        # Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
+        # Globals.avg_move_time += move_time - pheromone_drop_time
+        # Globals.avg_perform_action_time += perform_action_time - move_time
+        # Globals.avg_placement_time += end_time - perform_action_time
+        # Globals.entire_time += end_time - start_time
+        # Globals.ant_operations += 1
+
     def max_health(self) -> int:
         return self.max_health
 
     def find_and_clear_precise_spot_for_drop(self, x, y, purpose):
         if purpose == 'ant':
+            self.matrix[self.last_y][self.last_x] = None
             if self.matrix[y][x] is None:
                 return True, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
@@ -249,72 +318,6 @@ class Ant(ABC):
     @abstractmethod
     def move(self, object_sighted, x, y) -> None:
         pass
-
-    def update(self):
-        # start_time = time.perf_counter() * 100000
-        # if self.matrix[self.last_y][self.last_x] is not None:
-        #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
-        #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
-        if not self.heading_towards_objective:
-            print('Exploring')
-            object_sighted, y, x = self.object_sighted()
-        else:
-            if ((abs(self.last_objective_sighted_x - self.x) < Globals.speed
-                    and abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
-                    (abs(self.last_objective_sighted_x - self.x) > Globals.ant_FOV)
-                    or (abs(self.last_objective_sighted_y - self.y) > Globals.ant_FOV)):
-                self.heading_towards_objective = False
-                object_sighted, y, x = self.object_sighted()
-            else:
-                print('Heading towards objective')
-                object_sighted = self.last_objective_sighted
-                x = self.last_objective_sighted_x
-                y = self.last_objective_sighted_y
-                print(f'Heading towards {y} {x}')
-        # object_sighted_time = time.perf_counter() * 100000
-        if object_sighted is None and self.last_objective_sighted is not None:
-            if (abs(self.last_objective_sighted_x - self.x) >= Globals.speed
-                    and abs(self.last_objective_sighted_y - self.y) >= Globals.speed):
-                self.heading_towards_objective = True
-                object_sighted = self.last_objective_sighted
-                self.time_no_pheromone_sighted -= 0.01
-            else:
-                self.last_objective_sighted = None
-            haide = random.randint(0, 2)
-            # print(f'OOOOOO{haide}')
-            if self.time_no_pheromone_sighted > Globals.how_long_until_ant_forgets_last_pheromone:
-                self.last_pheromone_distance = -1
-            else:
-                self.time_no_pheromone_sighted += 0.01
-            self.time_no_pheromone_sighted = 0
-        else:
-            haide = random.randint(0, 2)
-            # print(f'++++++')
-        self.pheromone_drop_count += 1
-        if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
-            self.drop_pheromone()
-            self.pheromone_drop_count = 0
-        # pheromone_drop_time = time.perf_counter() * 100000
-        self.move(object_sighted, x, y)
-        # move_time = time.perf_counter() * 100000
-        self.perform_action()
-        # perform_action_time = time.perf_counter() * 100000
-        placement_x, placement_y = self.find_and_clear_spot_for_drop('ant')
-        self.last_y = placement_y
-        self.last_x = placement_x
-        if placement_x != -1 and placement_y != -1:
-            self.matrix[placement_y][placement_x] = Marker(MarkerType.ANT, None,
-                                                           self.colony_id,
-                                                           Globals.global_time_frame,
-                                                           Globals.global_time_frame)
-        # end_time = time.perf_counter() * 100000
-        # Globals.avg_object_sighted_time += object_sighted_time - start_time
-        # Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
-        # Globals.avg_move_time += move_time - pheromone_drop_time
-        # Globals.avg_perform_action_time += perform_action_time - move_time
-        # Globals.avg_placement_time += end_time - perform_action_time
-        # Globals.entire_time += end_time - start_time
-        # Globals.ant_operations += 1
 
     def move_towards_objective(self, object_sighted, x, y):
         if object_sighted is None:

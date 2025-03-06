@@ -46,6 +46,7 @@ class Worker(Ant):
                 self.destination = Action.COLONY
                 self.heading_y = -self.heading_y
                 self.heading_x = -self.heading_x
+                print(self.heading_x, self.heading_y)
 
         elif self.destination == Action.COLONY:
             colony_in_reach = False
@@ -68,6 +69,7 @@ class Worker(Ant):
                 self.heading_x = -self.heading_x
 
     def look_for_object_at_precise_spot(self, i, j):
+        Globals.pause_pheromone_cleanup()
         object_sighted = None
         object_i = -1
         object_j = -1
@@ -91,6 +93,7 @@ class Worker(Ant):
                     self.last_objective_sighted = object_sighted
                     self.last_objective_sighted_x = j
                     self.last_objective_sighted_y = i
+                    Globals.pause_pheromone_cleanup()
                     return object_sighted, i, j
                 if self.matrix[i][j].m_type == MarkerType.FOOD \
                         and not self.is_carrying_food \
@@ -100,6 +103,7 @@ class Worker(Ant):
                     self.last_objective_sighted = object_sighted
                     self.last_objective_sighted_x = j
                     self.last_objective_sighted_y = i
+                    Globals.pause_pheromone_cleanup()
                     return object_sighted, i, j
                 elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
                     # print('ANT -> ', self.destination)
@@ -109,6 +113,8 @@ class Worker(Ant):
                             (self.matrix[i][j].target == PheromoneType.TO_COLONY
                              and self.destination == Action.COLONY)):
                         print('XXXXXXXXXXXXXXXXXXX')
+                        if self.matrix[i][j] is None:
+                            print('NoneType')
                         if self.matrix[i][j].creator == self.colony_id:
                             object_sighted = copy.deepcopy(self.matrix[i][j])
                             object_i = i
@@ -118,7 +124,9 @@ class Worker(Ant):
                             self.last_objective_sighted = object_sighted
                             self.last_objective_sighted_x = j
                             self.last_objective_sighted_y = i
+                            Globals.pause_pheromone_cleanup()
                             return object_sighted, object_i, object_j
+        Globals.pause_pheromone_cleanup()
         return object_sighted, object_i, object_j
 
     def object_sighted(self):
@@ -130,6 +138,9 @@ class Worker(Ant):
         object_i = -1
         object_j = -1
         first_checked_position_x, first_checked_position_y = self.get_first_angle_to_check()
+        best_object = None
+        best_object_i = -1
+        best_object_j = -1
         if first_checked_position_y == above:
             if first_checked_position_x == left:
                 for i in range(0, Globals.ant_FOV + 1):
@@ -137,35 +148,101 @@ class Worker(Ant):
                         if 0 < i + above < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if i != j and 0 < j + above < Globals.height and 0 < i + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(j + above, i + left)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
             elif first_checked_position_x == right:
                 for i in range(0, Globals.ant_FOV + 1):
                     for j in range(2 * Globals.ant_FOV - i, Globals.ant_FOV - 1, -1):
                         if 0 < i + above < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if (i + j != below - above - 1 and 0 < below - j - 1 < Globals.height
                                 and 0 < right - i - 1 < Globals.width):
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(below - j - 1, right - i - 1)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
             else:
                 for i in range(0, Globals.ant_FOV + 1):
                     for j in range(Globals.ant_FOV, 2 * Globals.ant_FOV - i + 1):
                         if 0 < i + above < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(i + above, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if (j != self.x - left and 0 < i + above < Globals.height
                                 and 0 < 2 * self.x - j - left < Globals.width):
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(i + above, 2 * self.x - j - left)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
         elif first_checked_position_y == below:
             if first_checked_position_x == left:
                 for i in range(0, Globals.ant_FOV + 1):
@@ -173,35 +250,101 @@ class Worker(Ant):
                         if 0 < below - i - 1 < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(below - i - 1, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if (i + j != below - above and 0 < below - j - 1 < Globals.height
                                 and 0 < i + left < Globals.width):
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(below - j - 1, i + left)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
             elif first_checked_position_x == right:
                 for i in range(0, Globals.ant_FOV + 1):
                     for j in range(2 * Globals.ant_FOV - i, Globals.ant_FOV - 1, -1):
                         if 0 < below - i - 1 < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(below - i - 1, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if i != j and 0 < above + j < Globals.height and 0 < right - i - 1 < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(above + j, right - i - 1)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
             else:
                 for i in range(0, Globals.ant_FOV + 1):
                     for j in range(Globals.ant_FOV, 2 * Globals.ant_FOV + 1 - i):
                         if 0 < below - i - 1 < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(below - i - 1, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if (j != self.x - left and 0 < below - i - 1 < Globals.height
                                 and 0 < 2 * self.x - j - left < Globals.width):
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(below - i - 1, 2 * self.x - j - left)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
         else:
             if first_checked_position_x == left:
                 for j in range(0, Globals.ant_FOV):
@@ -209,23 +352,67 @@ class Worker(Ant):
                         if 0 < i + self.y < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(i + self.y, j + left)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if i != 0 and 0 < self.y - i < Globals.height and 0 < j + left < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(self.y - i, j + left)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
             else:
                 for j in range(Globals.ant_FOV, 0, -1):
                     for i in range(0, j + 1):
                         if 0 < i + self.y < Globals.height and 0 < j + self.x < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(i + self.y, j + self.x)
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
                         if i != 0 and 0 < self.y - i < Globals.height and 0 < j + self.x < Globals.width:
                             object_sighted, object_i, object_j = \
                                 self.look_for_object_at_precise_spot(self.y - i, j + self.x)
-                    if object_sighted is not None:
-                        return object_sighted, object_i, object_j
-        return object_sighted, object_i, object_j
+                        if object_sighted is not None:
+                            if object_sighted.m_type == MarkerType.PHEROMONE:
+                                if best_object is None:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                                elif object_sighted.distance < best_object.distance:
+                                    best_object = object_sighted
+                                    best_object_i = object_i
+                                    best_object_j = object_j
+                            else:
+                                return object_sighted, object_i, object_j
+        return best_object, best_object_i, best_object_j
 
     def move_to_explore(self):
         movement_change = True if random.random() < Globals.exploration_rate else False
