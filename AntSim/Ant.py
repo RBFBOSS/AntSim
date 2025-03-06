@@ -259,14 +259,18 @@ class Ant(ABC):
             print('Exploring')
             object_sighted, y, x = self.object_sighted()
         else:
-            if (abs(self.last_objective_sighted_x - self.x) < Globals.speed
-                    and abs(self.last_objective_sighted_y - self.y) < Globals.speed):
+            if ((abs(self.last_objective_sighted_x - self.x) < Globals.speed
+                    and abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
+                    (abs(self.last_objective_sighted_x - self.x) > Globals.ant_FOV)
+                    or (abs(self.last_objective_sighted_y - self.y) > Globals.ant_FOV)):
                 self.heading_towards_objective = False
                 object_sighted, y, x = self.object_sighted()
             else:
+                print('Heading towards objective')
                 object_sighted = self.last_objective_sighted
                 x = self.last_objective_sighted_x
                 y = self.last_objective_sighted_y
+                print(f'Heading towards {y} {x}')
         # object_sighted_time = time.perf_counter() * 100000
         if object_sighted is None and self.last_objective_sighted is not None:
             if (abs(self.last_objective_sighted_x - self.x) >= Globals.speed
@@ -320,22 +324,6 @@ class Ant(ABC):
         self.perform_movement()
 
     def turn_towards(self, x, y) -> None:
-        # if x == self.x and y == self.y:
-        #     return
-        # if abs(x - self.x) > abs(y - self.y):
-        #     if x > self.x:
-        #         self.heading_x = 1
-        #     elif x < self.x:
-        #         self.heading_x = -1
-        #     else:
-        #         self.heading_x = 0
-        # else:
-        #     if y > self.y:
-        #         self.heading_y = 1
-        #     elif y < self.y:
-        #         self.heading_y = -1
-        #     else:
-        #         self.heading_y = 0
         aux_x = self.x
         aux_y = self.y
         if x > self.x:
@@ -352,9 +340,6 @@ class Ant(ABC):
             self.heading_y = 0
         if aux_x != self.x or aux_y != self.y:
             print('Direction changed')
-        if random.random() < Globals.chance_to_deviate_from_path:
-            print('============DEVIATION ERROR======================')
-            self.slightly_change_direction()
 
     @abstractmethod
     def object_sighted(self) -> Marker:
