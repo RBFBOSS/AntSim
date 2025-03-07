@@ -62,15 +62,15 @@ class Graphics:
                 pygame.draw.rect(self.screen, (0, 0, 0),
                                  (ant.x - Globals.ant_FOV, ant.y - Globals.ant_FOV,
                                   Globals.ant_FOV * 2, Globals.ant_FOV * 2), 1)
-                # if isinstance(ant, Worker):
-                #     pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
-                #     pygame.draw.circle(self.screen, (0, 0, 0),
-                #                        (ant.x + 5 * ant.heading_x, ant.y + 5 * ant.heading_y), 5)
-                # elif isinstance(ant, Soldier):
-                #     pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 7)
-                #     pygame.draw.circle(self.screen, (0, 0, 0),
-                #                        (ant.x + 7 * ant.heading_x, ant.y + 7 * ant.heading_y), 7)
-            print(Globals.ant_FOVs)
+                if isinstance(ant, Worker):
+                    pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 3)
+                    pygame.draw.circle(self.screen, (0, 0, 0),
+                                       (ant.x + 5 * ant.heading_x, ant.y + 5 * ant.heading_y), 3)
+                elif isinstance(ant, Soldier):
+                    pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 5)
+                    pygame.draw.circle(self.screen, (0, 0, 0),
+                                       (ant.x + 7 * ant.heading_x, ant.y + 7 * ant.heading_y), 5)
+            # print(Globals.ant_FOVs)
             for FOV in Globals.ant_FOVs:
                 pygame.draw.rect(self.screen, (0, 0, 0), (FOV[1], FOV[0], 1, 1))
 

@@ -69,11 +69,13 @@ class Worker(Ant):
                 self.heading_x = -self.heading_x
 
     def look_for_object_at_precise_spot(self, i, j):
-        Globals.pause_pheromone_cleanup()
+        # Globals.pause_pheromone_cleanup()
+        # while not Globals.waiting_event.is_set():
+        #     pass
         object_sighted = None
         object_i = -1
         object_j = -1
-        Globals.ant_FOVs.append((i, j))
+        # Globals.ant_FOVs.append((i, j))
         if i != self.y or j != self.x:
             if self.matrix[i][j] is not None:
                 if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
@@ -93,7 +95,7 @@ class Worker(Ant):
                     self.last_objective_sighted = object_sighted
                     self.last_objective_sighted_x = j
                     self.last_objective_sighted_y = i
-                    Globals.pause_pheromone_cleanup()
+                    # Globals.resume_pheromone_cleanup()
                     return object_sighted, i, j
                 if self.matrix[i][j].m_type == MarkerType.FOOD \
                         and not self.is_carrying_food \
@@ -103,7 +105,7 @@ class Worker(Ant):
                     self.last_objective_sighted = object_sighted
                     self.last_objective_sighted_x = j
                     self.last_objective_sighted_y = i
-                    Globals.pause_pheromone_cleanup()
+                    # Globals.resume_pheromone_cleanup()
                     return object_sighted, i, j
                 elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
                     # print('ANT -> ', self.destination)
@@ -115,6 +117,8 @@ class Worker(Ant):
                         print('XXXXXXXXXXXXXXXXXXX')
                         if self.matrix[i][j] is None:
                             print('NoneType')
+                            print(Globals.waiting_event.is_set())
+                            print(Globals.pause_event.is_set())
                         if self.matrix[i][j].creator == self.colony_id:
                             object_sighted = copy.deepcopy(self.matrix[i][j])
                             object_i = i
@@ -124,9 +128,9 @@ class Worker(Ant):
                             self.last_objective_sighted = object_sighted
                             self.last_objective_sighted_x = j
                             self.last_objective_sighted_y = i
-                            Globals.pause_pheromone_cleanup()
+                            # Globals.resume_pheromone_cleanup()
                             return object_sighted, object_i, object_j
-        Globals.pause_pheromone_cleanup()
+        # Globals.resume_pheromone_cleanup()
         return object_sighted, object_i, object_j
 
     def object_sighted(self):

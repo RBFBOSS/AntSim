@@ -166,9 +166,9 @@ class Ant(ABC):
                         alternative_x = x
                         alternative_y = y
                 above = int(max(0, self.y - dist))
-                below = int(min(899, self.y + dist))
+                below = int(min(Globals.height - 1, self.y + dist))
                 left = int(max(0, self.x - dist))
-                right = int(min(1519, self.x + dist))
+                right = int(min(Globals.width - 1, self.x + dist))
                 for i in range(above, below):
                     for j in range(left, right):
                         done, x, y = self.find_and_clear_precise_spot_for_drop(j, i, purpose)
@@ -286,11 +286,11 @@ class Ant(ABC):
                 self.heading_y = random.choice([-1, 1])
             else:
                 self.heading_y = random.choice([-1, 0, 1])
-        if self.x >= 1518:
+        if self.x >= Globals.width - 2:
             self.heading_x = -1
         elif self.x <= 2:
             self.heading_x = 1
-        if self.y >= 890:
+        if self.y >= Globals.height - 2:
             self.heading_y = -1
         elif self.y <= 10:
             self.heading_y = 1
