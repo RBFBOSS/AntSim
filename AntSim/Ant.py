@@ -54,23 +54,20 @@ class Ant(ABC):
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
         #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
         if not self.heading_towards_objective:
-            print('Exploring')
             object_sighted, y, x = self.object_sighted()
         else:
             if ((abs(self.last_objective_sighted_x - self.x) < Globals.speed
-                    and abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
+                    or abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
                     (abs(self.last_objective_sighted_x - self.x) > Globals.ant_FOV)
                     or (abs(self.last_objective_sighted_y - self.y) > Globals.ant_FOV)):
                 self.heading_towards_objective = False
                 object_sighted, y, x = self.object_sighted()
             else:
-                print('Heading towards objective')
                 object_sighted, y, x = self.object_sighted()
                 if object_sighted is None:
                     object_sighted = self.last_objective_sighted
                     x = self.last_objective_sighted_x
                     y = self.last_objective_sighted_y
-                print(f'Heading towards {y} {x}')
         # object_sighted_time = time.perf_counter() * 100000
         if object_sighted is None and self.last_objective_sighted is not None:
             if (abs(self.last_objective_sighted_x - self.x) >= Globals.speed
@@ -292,7 +289,7 @@ class Ant(ABC):
             self.heading_x = 1
         if self.y >= Globals.height - 2:
             self.heading_y = -1
-        elif self.y <= 10:
+        elif self.y <= 2:
             self.heading_y = 1
         self.x += self.heading_x * Globals.speed
         self.y += self.heading_y * Globals.speed

@@ -41,12 +41,10 @@ class Worker(Ant):
                             self.heading_towards_objective = False
                             break
             if food_in_reach:
-                print('FOOD IN REACH')
                 self.is_carrying_food = True
                 self.destination = Action.COLONY
                 self.heading_y = -self.heading_y
                 self.heading_x = -self.heading_x
-                print(self.heading_x, self.heading_y)
 
         elif self.destination == Action.COLONY:
             colony_in_reach = False
@@ -62,7 +60,6 @@ class Worker(Ant):
                             self.heading_towards_objective = False
                             break
             if colony_in_reach:
-                print('COLONY IN REACH')
                 self.is_carrying_food = False
                 self.destination = Action.FOOD
                 self.heading_y = -self.heading_y
@@ -114,11 +111,6 @@ class Worker(Ant):
                          and self.destination == Action.FOOD) or
                             (self.matrix[i][j].target == PheromoneType.TO_COLONY
                              and self.destination == Action.COLONY)):
-                        print('XXXXXXXXXXXXXXXXXXX')
-                        if self.matrix[i][j] is None:
-                            print('NoneType')
-                            print(Globals.waiting_event.is_set())
-                            print(Globals.pause_event.is_set())
                         if self.matrix[i][j].creator == self.colony_id:
                             object_sighted = copy.deepcopy(self.matrix[i][j])
                             object_i = i

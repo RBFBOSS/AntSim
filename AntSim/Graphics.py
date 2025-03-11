@@ -41,7 +41,6 @@ class Graphics:
         quit()
 
     def draw_sim(self):
-        print("Drawing simulation")
         for pheromone in Globals.pheromones:
             if pheromone.target == PheromoneType.TO_COLONY:
                 pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
