@@ -6,12 +6,12 @@ class Soldier(Ant):
     def __init__(self, destination: Action, attack: int,
                  x: int, y: int, heading_x: int,
                  heading_y: int, state: int,
-                 colony_id: int, matrix, pheromones):
+                 colony_id: int, matrix, pheromones, simulation):
         super().__init__(30, destination,
                          attack, x, y,
                          heading_x, heading_y,
                          state, colony_id,
-                         matrix, pheromones)
+                         matrix, pheromones, simulation)
 
     def move(self, object_sighted, x, y) -> None:
         if self.destination == Action.IDLE:

@@ -1,3 +1,5 @@
+import random
+
 from Colony import Colony
 from FoodSource import FoodSource
 from Globals import Globals
@@ -23,11 +25,10 @@ class Simulation:
                 Globals.waiting_event.clear()
                 time.sleep(0.001)
 
-    @staticmethod
-    def add_colony(x: int, y: int) -> None:
+    def add_colony(self, x: int, y: int) -> None:
         Globals.colonies.append(Colony(len(Globals.colonies),
                                        x, y, Globals.matrix,
-                                       Globals.pheromones))
+                                       Globals.pheromones, self))
 
     @staticmethod
     def get_colony(colony_id: int) -> Colony:
@@ -35,7 +36,8 @@ class Simulation:
 
     @staticmethod
     def add_food_source(x: int, y: int) -> None:
-        Globals.food_sources.append(FoodSource(len(Globals.food_sources), x, y, Globals.matrix))
+        Globals.food_source_counter += 1
+        Globals.food_sources.append(FoodSource(Globals.food_source_counter, x, y, Globals.matrix))
 
     @staticmethod
     def get_food_source(food_source_id: int) -> FoodSource:
@@ -55,6 +57,8 @@ class Simulation:
         for colony in Globals.colonies:
             colony.update()
         self.update_count += 1
+        if len(Globals.food_sources) < Globals.nr_of_food_sources:
+            self.add_food_source(random.randint(0, Globals.width), random.randint(0, Globals.height))
         if self.update_count >= Globals.update_pheromones_count:
             self.delete_old_pheromones()
             # self.delete_old_pheromones()

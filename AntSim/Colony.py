@@ -10,7 +10,8 @@ from Soldier import Soldier
 
 class Colony:
     def __init__(self, colony_id, x: int, y: int,
-                 matrix, pheromones):
+                 matrix, pheromones, simulation):
+        self.simulation = simulation
         self.colony_id = colony_id
         self.ants = []
         self.food_supply = 0
@@ -47,14 +48,14 @@ class Colony:
                                     self.x, self.y,
                                     heading_x, heading_y,
                                     0, self.colony_id,
-                                    self.matrix, self.pheromones))
+                                    self.matrix, self.pheromones, self.simulation))
             self.nr_of_workers += 1
         else:
             self.ants.append(Soldier(Action.IDLE, 20,
                                      self.x, self.y,
                                      heading_x, heading_y,
                                      0, self.colony_id,
-                                     self.matrix, self.pheromones))
+                                     self.matrix, self.pheromones, self.simulation))
             self.nr_of_soldiers += 1
 
     def print_ants(self):

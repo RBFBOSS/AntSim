@@ -3,6 +3,8 @@ import time
 
 
 class Globals:
+    food_source_counter = 0
+    nr_of_food_sources = 7
     ant_FOVs = []
     speed = 2
     pause_event = threading.Event()
@@ -14,7 +16,7 @@ class Globals:
     ant_FOV = 10
     pheromone_drop_FOV = 5
     exploration_rate = 0.005
-    col1_ants_generated = 100
+    col1_ants_generated = 50
     col2_ants_generated = 0
     delay_rate = 0
     avg_object_sighted_time = 0
@@ -64,3 +66,10 @@ class Globals:
     @staticmethod
     def initialize_matrix():
         Globals.matrix = [[None for _ in range(Globals.width)] for _ in range(Globals.height)]
+
+    @staticmethod
+    def remove_food(creator, amount):
+        for food_source in Globals.food_sources:
+            if food_source.food_id == creator:
+                food_source.remove_food(amount)
+                break

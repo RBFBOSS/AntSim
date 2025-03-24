@@ -49,6 +49,9 @@ class Graphics:
                 pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 1)
         for food_source in Globals.food_sources:
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
+            font = pygame.font.SysFont(None, 24)
+            food_size_text = font.render(str(food_source.size), True, (0, 0, 0))
+            self.screen.blit(food_size_text, (food_source.x - 10, food_source.y - 10))
         for colony in Globals.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
             x = colony.x

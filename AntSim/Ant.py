@@ -20,7 +20,9 @@ class Ant(ABC):
                  state: int,
                  colony_id: int,
                  matrix,
-                 pheromones):
+                 pheromones,
+                 simulation):
+        self.simulation = simulation
         self.aux = 0
         self.is_carrying_food = False
         self.max_health = max_health
@@ -34,7 +36,7 @@ class Ant(ABC):
         self.state = state
         self.colony_id = colony_id
         self.matrix = matrix
-        self.last_visited_object = self.matrix[y][x]
+        self.last_visited_object = PheromoneType.TO_COLONY
         self.time_of_last_visit = Globals.global_time_frame
         self.pheromones = pheromones
         self.pheromone_drop_count = 0
@@ -130,9 +132,9 @@ class Ant(ABC):
                 return False, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
                 if ((self.matrix[y][x].target == PheromoneType.TO_COLONY
-                     and self.last_visited_object.m_type == MarkerType.COLONY)
+                     and self.last_visited_object == PheromoneType.TO_COLONY)
                         or (self.matrix[y][x].target == PheromoneType.TO_FOOD
-                            and self.last_visited_object.m_type == MarkerType.FOOD)):
+                            and self.last_visited_object == PheromoneType.TO_FOOD)):
                     if Globals.global_time_frame - self.matrix[y][x].creation_time > \
                             Globals.time_until_pheromone_override:
                         if self.last_pheromone_distance < self.matrix[y][x].distance:
@@ -195,7 +197,7 @@ class Ant(ABC):
         placement_x, placement_y = self.find_and_clear_spot_for_drop('pheromone')
         if placement_x == -1 or placement_y == -1:
             return
-        if self.last_visited_object.m_type == MarkerType.FOOD:
+        if self.last_visited_object == PheromoneType.TO_FOOD:
             self.matrix[placement_y][placement_x] = Marker(MarkerType.PHEROMONE,
                                                            PheromoneType.TO_FOOD,
                                                            self.colony_id,
@@ -205,8 +207,7 @@ class Ant(ABC):
                                              PheromoneType.TO_FOOD, self.colony_id,
                                              Globals.global_time_frame - self.time_of_last_visit,
                                              Globals.global_time_frame))
-        elif self.last_visited_object.m_type == MarkerType.COLONY \
-                and self.last_visited_object.creator == self.colony_id:
+        elif self.last_visited_object == PheromoneType.TO_COLONY:
             self.matrix[placement_y][placement_x] = Marker(MarkerType.PHEROMONE,
                                                            PheromoneType.TO_COLONY,
                                                            self.colony_id,

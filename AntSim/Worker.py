@@ -13,12 +13,12 @@ class Worker(Ant):
     def __init__(self, destination: Action, attack: int,
                  x: int, y: int, heading_x: int,
                  heading_y: int, state: int,
-                 colony_id: int, matrix, pheromones):
+                 colony_id: int, matrix, pheromones, simulation):
         super().__init__(10, destination,
                          attack, x, y,
                          heading_x, heading_y,
                          state, colony_id,
-                         matrix, pheromones)
+                         matrix, pheromones, simulation)
 
     def move(self, object_sighted, x, y) -> None:
         if self.destination == Action.IDLE:
@@ -34,8 +34,9 @@ class Worker(Ant):
                 for j in range(self.x - 1, self.x + 1):
                     if self.matrix[i][j]:
                         if self.matrix[i][j].m_type == MarkerType.FOOD:
+                            Globals.remove_food(self.matrix[i][j].creator, 1)
                             food_in_reach = True
-                            self.last_visited_object = self.matrix[i][j]
+                            self.last_visited_object = PheromoneType.TO_FOOD
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
@@ -55,7 +56,7 @@ class Worker(Ant):
                         if self.matrix[i][j].m_type == MarkerType.COLONY \
                                 and self.matrix[i][j].creator == self.colony_id:
                             colony_in_reach = True
-                            self.last_visited_object = self.matrix[i][j]
+                            self.last_visited_object = PheromoneType.TO_COLONY
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
