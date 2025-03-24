@@ -49,9 +49,6 @@ class Ant(ABC):
         self.last_objective_sighted_y = -1
 
     def update(self):
-        print(self.heading_x, self.heading_y, self.last_objective_sighted_x, self.last_objective_sighted_y)
-        if self.last_objective_sighted is not None:
-            print(self.last_objective_sighted.m_type)
         # start_time = time.perf_counter() * 100000
         # if self.matrix[self.last_y][self.last_x] is not None:
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
@@ -60,7 +57,7 @@ class Ant(ABC):
             object_sighted, y, x = self.object_sighted()
         else:
             if ((abs(self.last_objective_sighted_x - self.x) < Globals.speed
-                    or abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
+                 or abs(self.last_objective_sighted_y - self.y) < Globals.speed) or
                     (abs(self.last_objective_sighted_x - self.x) > Globals.ant_FOV)
                     or (abs(self.last_objective_sighted_y - self.y) > Globals.ant_FOV)):
                 self.heading_towards_objective = False
@@ -269,7 +266,7 @@ class Ant(ABC):
             self.slightly_change_direction()
         self.perform_movement()
 
-    def perform_movement(self) -> None:
+    def perform_movement(self, x=-1, y=-1) -> None:
         if self.heading_x == 0 and self.heading_y == 0:
             print('-----------------------------------')
             print('-----------------------------------')
@@ -281,6 +278,11 @@ class Ant(ABC):
                 self.heading_y = random.choice([-1, 1])
             else:
                 self.heading_y = random.choice([-1, 0, 1])
+        if (x < Globals.width - 2 and y < Globals.height - 2 and abs(self.x - x) < Globals.speed
+                and abs(self.y - y) < Globals.speed):
+            self.x = x
+            self.y = y
+            return
         if self.x >= Globals.width - 2:
             self.heading_x = -1
         elif self.x <= 2:
@@ -319,11 +321,13 @@ class Ant(ABC):
             self.move_to_explore()
             return
         self.turn_towards(x, y)
-        self.perform_movement()
+        self.perform_movement(x, y)
 
     def turn_towards(self, x, y) -> None:
         aux_x = self.x
         aux_y = self.y
+        if x - Globals.speed <= self.x <= x + Globals.speed and y - Globals.speed <= self.y <= y + Globals.speed:
+            return
         if x - Globals.speed > self.x:
             self.heading_x = 1
         elif x < self.x - Globals.speed:

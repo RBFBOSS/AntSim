@@ -4,6 +4,7 @@ import time
 
 class Globals:
     ant_FOVs = []
+    speed = 2
     pause_event = threading.Event()
     waiting_event = threading.Event()
     global_time_frame = 0.0
@@ -11,7 +12,7 @@ class Globals:
     update_pheromones_count = 1
     pheromone_lifespan = 6
     ant_FOV = 10
-    pheromone_drop_FOV = 3
+    pheromone_drop_FOV = 5
     exploration_rate = 0.005
     col1_ants_generated = 100
     col2_ants_generated = 0
@@ -28,11 +29,10 @@ class Globals:
     colonies_sighted = 0
     ants_sighted = 0
     food_sources_sighted = 0
-    speed = 2
     how_recent_last_visit_has_to_be_for_pheromone_drop = 7
     pheromones_to_check = 10
     how_young_pheromone_to_consider = 10
-    chance_to_deviate_from_path = 0.0005
+    chance_to_deviate_from_path = 0
     colonies = []
     food_sources = []
     pheromones = []
