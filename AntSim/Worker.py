@@ -34,19 +34,18 @@ class Worker(Ant):
                 for j in range(self.x - 1, self.x + 1):
                     if self.matrix[i][j]:
                         if self.matrix[i][j].m_type == MarkerType.FOOD:
-                            Globals.remove_food(self.matrix[i][j].creator, 1)
+                            Globals.remove_from_food_source(self.matrix[i][j].creator, 1)
                             food_in_reach = True
                             self.last_visited_object = PheromoneType.TO_FOOD
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
-                            break
-            if food_in_reach:
-                self.is_carrying_food = True
-                self.destination = Action.COLONY
-                self.heading_y = -self.heading_y
-                self.heading_x = -self.heading_x
-                self.last_objective_sighted = None
+                            self.is_carrying_food = True
+                            self.destination = Action.COLONY
+                            self.heading_y = -self.heading_y
+                            self.heading_x = -self.heading_x
+                            self.last_objective_sighted = None
+                            return
 
         elif self.destination == Action.COLONY:
             colony_in_reach = False
@@ -55,18 +54,19 @@ class Worker(Ant):
                     if self.matrix[i][j]:
                         if self.matrix[i][j].m_type == MarkerType.COLONY \
                                 and self.matrix[i][j].creator == self.colony_id:
+                            if self.is_carrying_food:
+                                Globals.add_food_to_colony(self.colony_id, 1)
+                                self.is_carrying_food = False
                             colony_in_reach = True
                             self.last_visited_object = PheromoneType.TO_COLONY
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
-                            break
-            if colony_in_reach:
-                self.is_carrying_food = False
-                self.destination = Action.FOOD
-                self.heading_y = -self.heading_y
-                self.heading_x = -self.heading_x
-                self.last_objective_sighted = None
+                            self.destination = Action.FOOD
+                            self.heading_y = -self.heading_y
+                            self.heading_x = -self.heading_x
+                            self.last_objective_sighted = None
+                            return
 
     def look_for_object_at_precise_spot(self, i, j):
         # Globals.pause_pheromone_cleanup()

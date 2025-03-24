@@ -10,6 +10,7 @@ import time
 class Simulation:
     def __init__(self):
         self.update_count = 0
+        self.colony_food_update_count = 0
         Globals.initialize_matrix()
         # self.pheromone_thread = threading.Thread(target=self.run_pheromone_cleanup)
         # self.pheromone_thread.daemon = True
@@ -54,6 +55,11 @@ class Simulation:
         Globals.increment_time_frame()
         # if Globals.global_time_frame >= 10:
         #     print('100 seconds passed')
+        self.colony_food_update_count += 1
+        if self.colony_food_update_count >= Globals.ants_eat_every_x_turns:
+            for colony in Globals.colonies:
+                colony.remove_food(len(colony.ants))
+            self.colony_food_update_count = 0
         for colony in Globals.colonies:
             colony.update()
         self.update_count += 1

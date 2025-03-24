@@ -54,6 +54,9 @@ class Graphics:
             self.screen.blit(food_size_text, (food_source.x - 10, food_source.y - 10))
         for colony in Globals.colonies:
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 30)
+            font = pygame.font.SysFont(None, 24)
+            food_size_text = font.render(str(colony.food_supply), True, (255, 255, 255))
+            self.screen.blit(food_size_text, (colony.x - 10, colony.y - 10))
             x = colony.x
             y = colony.y
             above = int(max(0, y - 30))

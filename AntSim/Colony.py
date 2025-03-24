@@ -58,6 +58,14 @@ class Colony:
                                      self.matrix, self.pheromones, self.simulation))
             self.nr_of_soldiers += 1
 
+    def add_food(self, amount):
+        self.food_supply += amount
+        if self.food_supply > self.food_supply_size:
+            self.food_supply = self.food_supply_size
+
+    def remove_food(self, amount):
+        self.food_supply = max(0, self.food_supply - amount)
+
     def print_ants(self):
         for ant in self.ants:
             if isinstance(ant, Worker):

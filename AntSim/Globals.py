@@ -3,6 +3,7 @@ import time
 
 
 class Globals:
+    ants_eat_every_x_turns = 1000
     food_source_counter = 0
     nr_of_food_sources = 7
     ant_FOVs = []
@@ -68,8 +69,15 @@ class Globals:
         Globals.matrix = [[None for _ in range(Globals.width)] for _ in range(Globals.height)]
 
     @staticmethod
-    def remove_food(creator, amount):
+    def remove_from_food_source(creator, amount):
         for food_source in Globals.food_sources:
             if food_source.food_id == creator:
                 food_source.remove_food(amount)
-                break
+                return
+
+    @staticmethod
+    def add_food_to_colony(colony_id, amount):
+        for colony in Globals.colonies:
+            if colony.colony_id == colony_id:
+                colony.add_food(amount)
+                return
