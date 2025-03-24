@@ -130,7 +130,7 @@ class Ant(ABC):
 
         elif purpose == 'pheromone':
             if self.matrix[y][x] is None:
-                return True, x, y
+                return False, x, y
             elif self.matrix[y][x].m_type == MarkerType.PHEROMONE:
                 if ((self.matrix[y][x].target == PheromoneType.TO_COLONY
                      and self.last_visited_object.m_type == MarkerType.COLONY)
@@ -178,11 +178,6 @@ class Ant(ABC):
                             if x != -1 and y != -1:
                                 alternative_x = x
                                 alternative_y = y
-
-            if alternative_x != -1 and alternative_y != -1:
-                print('Ant -> ', self.last_visited_object.m_type)
-                print('Pheromone -> ', self.matrix[alternative_y][alternative_x].target)
-                # Ant.delete_pheromone_on_position(alternative_x, alternative_y)
             return alternative_x, alternative_y
 
     @staticmethod
@@ -329,15 +324,15 @@ class Ant(ABC):
     def turn_towards(self, x, y) -> None:
         aux_x = self.x
         aux_y = self.y
-        if x - Globals.speed >= self.x:
+        if x - Globals.speed > self.x:
             self.heading_x = 1
-        elif x <= self.x - Globals.speed:
+        elif x < self.x - Globals.speed:
             self.heading_x = -1
         else:
             self.heading_x = 0
-        if y - Globals.speed >= self.y:
+        if y - Globals.speed > self.y:
             self.heading_y = 1
-        elif y <= self.y - Globals.speed:
+        elif y < self.y - Globals.speed:
             self.heading_y = -1
         else:
             self.heading_y = 0
