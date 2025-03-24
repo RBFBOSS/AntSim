@@ -45,6 +45,7 @@ class Worker(Ant):
                 self.destination = Action.COLONY
                 self.heading_y = -self.heading_y
                 self.heading_x = -self.heading_x
+                self.last_objective_sighted = None
 
         elif self.destination == Action.COLONY:
             colony_in_reach = False
@@ -64,6 +65,7 @@ class Worker(Ant):
                 self.destination = Action.FOOD
                 self.heading_y = -self.heading_y
                 self.heading_x = -self.heading_x
+                self.last_objective_sighted = None
 
     def look_for_object_at_precise_spot(self, i, j):
         # Globals.pause_pheromone_cleanup()

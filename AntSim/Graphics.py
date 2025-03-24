@@ -58,9 +58,9 @@ class Graphics:
             left = int(max(0, x - 30))
             right = int(min(1519, x + 30))
             for ant in colony.ants:
-                pygame.draw.rect(self.screen, (0, 0, 0),
-                                 (ant.x - Globals.ant_FOV, ant.y - Globals.ant_FOV,
-                                  Globals.ant_FOV * 2, Globals.ant_FOV * 2), 1)
+                # pygame.draw.rect(self.screen, (0, 0, 0),
+                #                  (ant.x - Globals.ant_FOV, ant.y - Globals.ant_FOV,
+                #                   Globals.ant_FOV * 2, Globals.ant_FOV * 2), 1)
                 if isinstance(ant, Worker):
                     pygame.draw.circle(self.screen, (0, 0, 0), (ant.x, ant.y), 3)
                     pygame.draw.circle(self.screen, (0, 0, 0),

@@ -49,6 +49,9 @@ class Ant(ABC):
         self.last_objective_sighted_y = -1
 
     def update(self):
+        print(self.heading_x, self.heading_y, self.last_objective_sighted_x, self.last_objective_sighted_y)
+        if self.last_objective_sighted is not None:
+            print(self.last_objective_sighted.m_type)
         # start_time = time.perf_counter() * 100000
         # if self.matrix[self.last_y][self.last_x] is not None:
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
@@ -326,15 +329,15 @@ class Ant(ABC):
     def turn_towards(self, x, y) -> None:
         aux_x = self.x
         aux_y = self.y
-        if x > self.x:
+        if x - Globals.speed >= self.x:
             self.heading_x = 1
-        elif x < self.x:
+        elif x <= self.x - Globals.speed:
             self.heading_x = -1
         else:
             self.heading_x = 0
-        if y > self.y:
+        if y - Globals.speed >= self.y:
             self.heading_y = 1
-        elif y < self.y:
+        elif y <= self.y - Globals.speed:
             self.heading_y = -1
         else:
             self.heading_y = 0
