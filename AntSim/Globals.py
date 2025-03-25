@@ -1,8 +1,8 @@
 import threading
-import time
 
 
 class Globals:
+    attack_range = 3
     time_until_worker_signals_enemies_again = 0
     time_until_colony_stops_making_soldiers = 2000
     max_workers_per_colony = 75
@@ -13,9 +13,9 @@ class Globals:
     soldier_maintenance_cost = 2
     precise_search_time = 0
     precise_searches = 0
-    ants_eat_every_x_turns = 1000
+    ants_eat_every_x_turns = 800
     food_source_counter = 0
-    nr_of_food_sources = 7
+    nr_of_food_sources = 3
     ant_FOVs = []
     speed = 2
     pause_event = threading.Event()

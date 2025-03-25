@@ -1,5 +1,3 @@
-from time import sleep
-
 from Globals import Globals
 from Graphics import Graphics
 from Simulation import Simulation

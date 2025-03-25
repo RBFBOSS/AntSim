@@ -5,5 +5,5 @@ class Action(Enum):
     IDLE = 0
     FOOD = 1
     COLONY = 2
-    FIGHT = 3
+    ATTACK = 3
     PATROL = 4

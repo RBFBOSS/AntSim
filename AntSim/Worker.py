@@ -11,12 +11,12 @@ from PheromoneType import PheromoneType
 
 
 class Worker(Ant):
-    def __init__(self, destination: Action, attack: int,
+    def __init__(self, destination: Action,
                  x: int, y: int, heading_x: int,
                  heading_y: int, state: int,
                  colony_id: int, matrix, pheromones, simulation):
         super().__init__(10, destination,
-                         attack, x, y,
+                         3, x, y,
                          heading_x, heading_y,
                          state, colony_id,
                          matrix, pheromones, simulation)

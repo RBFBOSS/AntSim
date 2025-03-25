@@ -3,7 +3,6 @@ import random
 from Colony import Colony
 from FoodSource import FoodSource
 from Globals import Globals
-import threading
 import time
 
 
@@ -59,6 +58,7 @@ class Simulation:
         self.colony_food_update_count += 1
         Globals.ant_operations = 0
         if self.colony_food_update_count >= Globals.ants_eat_every_x_turns:
+            print('Ants eat')
             for colony in Globals.colonies:
                 colony.add_food(10 * Globals.worker_maintenance_cost)
                 colony.remove_food()

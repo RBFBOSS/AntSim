@@ -11,12 +11,12 @@ from PheromoneType import PheromoneType
 
 
 class Soldier(Ant):
-    def __init__(self, destination: Action, attack: int,
+    def __init__(self, destination: Action,
                  x: int, y: int, heading_x: int,
                  heading_y: int, state: int,
                  colony_id: int, matrix, pheromones, simulation):
-        super().__init__(10, destination,
-                         attack, x, y,
+        super().__init__(30, destination,
+                         10, x, y,
                          heading_x, heading_y,
                          state, colony_id,
                          matrix, pheromones, simulation)
@@ -29,22 +29,18 @@ class Soldier(Ant):
             self.move_towards_objective(object_sighted, x, y)
 
     def perform_action(self):
-        if self.destination == Action.FOOD:
-            food_in_reach = False
-            for i in range(self.y - 1, self.y + 1):
-                for j in range(self.x - 1, self.x + 1):
+        if self.destination == Action.ATTACK:
+            enemy_in_reach = False
+            for i in range(self.y - Globals.attack_range, self.y + Globals.attack_range):
+                for j in range(self.x - Globals.attack_range, self.x + Globals.attack_range):
                     if self.matrix[i][j]:
-                        if self.matrix[i][j].m_type == MarkerType.FOOD:
-                            Globals.remove_from_food_source(self.matrix[i][j].creator, 1)
-                            food_in_reach = True
-                            self.is_carrying_food = True
-                            self.last_visited_object = PheromoneType.TO_FOOD
+                        if self.matrix[i][j].m_type == MarkerType.ANT \
+                                and self.matrix[i][j].creator != self.colony_id:
+                            enemy_in_reach = True
+                            self.last_visited_object = PheromoneType.TO_ENEMY
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
-                            self.destination = Action.COLONY
-                            self.heading_y = -self.heading_y
-                            self.heading_x = -self.heading_x
                             self.last_objective_sighted = None
                             return
 

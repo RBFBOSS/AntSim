@@ -45,15 +45,13 @@ class Colony:
         else:
             heading_y = random.choice([-1, 0, 1])
         if ant_type.lower() == 'worker':
-            self.ants.append(Worker(Action.FOOD, 10,
-                                    self.x, self.y,
+            self.ants.append(Worker(Action.FOOD, self.x, self.y,
                                     heading_x, heading_y,
                                     0, self.colony_id,
                                     self.matrix, self.pheromones, self.simulation))
             self.nr_of_workers += 1
         else:
-            self.ants.append(Soldier(Action.IDLE, 20,
-                                     self.x, self.y,
+            self.ants.append(Soldier(Action.IDLE, self.x, self.y,
                                      heading_x, heading_y,
                                      0, self.colony_id,
                                      self.matrix, self.pheromones, self.simulation))
@@ -83,10 +81,13 @@ class Colony:
             self.food_supply = self.food_supply_size
 
     def remove_food(self):
+        self.check_for_starvation()
         self.food_supply = max(0, self.food_supply - self.nr_of_workers * Globals.worker_maintenance_cost
                                - self.nr_of_soldiers * Globals.soldier_maintenance_cost)
 
     def check_for_starvation(self):
+        self.nr_of_workers = sum(isinstance(ant, Worker) for ant in self.ants)
+        self.nr_of_soldiers = sum(isinstance(ant, Soldier) for ant in self.ants)
         if (self.food_supply < self.nr_of_workers * Globals.worker_maintenance_cost
                 + self.nr_of_soldiers * Globals.soldier_maintenance_cost):
             dif = (self.nr_of_workers * Globals.worker_maintenance_cost
@@ -94,12 +95,14 @@ class Colony:
             for ant in self.ants:
                 if isinstance(ant, Soldier):
                     self.delete_ant(ant)
+                    self.nr_of_soldiers -= 1
                     dif -= Globals.soldier_maintenance_cost
                     if dif <= 0:
                         break
             if dif > 0:
                 for ant in self.ants:
                     if isinstance(ant, Worker):
+                        self.nr_of_workers -= 1
                         self.delete_ant(ant)
                         dif -= Globals.worker_maintenance_cost
                         if dif <= 0:
@@ -120,22 +123,24 @@ class Colony:
         pass
 
     def update(self):
-        if self.is_making_soldiers:
-            while ((self.nr_of_workers * Globals.worker_maintenance_cost
-                    + self.nr_of_soldiers * Globals.soldier_maintenance_cost) * 2 <=
-                   self.food_supply):
-                cond1 = False
+        while ((self.nr_of_workers * Globals.worker_maintenance_cost
+                + self.nr_of_soldiers * Globals.soldier_maintenance_cost) * 2 <=
+                self.food_supply):
+            cond1 = False
+            if self.is_making_soldiers:
                 if self.nr_of_soldiers < Globals.max_soldiers_per_colony:
                     self.produce_ant('soldier')
                 else:
                     cond1 = True
-                cond2 = False
-                if self.nr_of_workers < Globals.max_workers_per_colony:
-                    self.produce_ant('worker')
-                else:
-                    cond2 = True
-                if cond1 and cond2:
-                    break
+            else:
+                cond1 = True
+            cond2 = False
+            if self.nr_of_workers < Globals.max_workers_per_colony:
+                self.produce_ant('worker')
+            else:
+                cond2 = True
+            if cond1 and cond2:
+                break
         for ant in self.ants:
             ant.update()
 

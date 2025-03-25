@@ -12,5 +12,6 @@ class Marker:
             self.distance = distance
             self.target = target
             self.creation_time = creation_time
+        self.ant_reference = None
         self.creator = creator
         self.age = 0
