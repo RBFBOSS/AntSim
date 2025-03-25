@@ -37,11 +37,11 @@ class Worker(Ant):
                         if self.matrix[i][j].m_type == MarkerType.FOOD:
                             Globals.remove_from_food_source(self.matrix[i][j].creator, 1)
                             food_in_reach = True
+                            self.is_carrying_food = True
                             self.last_visited_object = PheromoneType.TO_FOOD
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
-                            self.is_carrying_food = True
                             self.destination = Action.COLONY
                             self.heading_y = -self.heading_y
                             self.heading_x = -self.heading_x
@@ -58,6 +58,9 @@ class Worker(Ant):
                             if self.is_carrying_food:
                                 Globals.add_food_to_colony(self.colony_id, 1)
                                 self.is_carrying_food = False
+                            if self.is_warning_about_enemy:
+                                Globals.colony_received_warning(self.colony_id)
+                                self.is_warning_about_enemy = False
                             colony_in_reach = True
                             self.last_visited_object = PheromoneType.TO_COLONY
                             self.last_pheromone_distance = -1
@@ -89,6 +92,21 @@ class Worker(Ant):
                 elif self.matrix[i][j].m_type == MarkerType.FOOD:
                     Globals.food_sources_sighted += 1
                 Globals.objects_sighted += 1
+                if self.matrix[i][j].m_type == MarkerType.ANT and self.matrix[i][j].creator != self.colony_id:
+                    if (Globals.global_time_frame - self.last_warning_about_enemy >
+                            Globals.time_until_worker_signals_enemies_again):
+                        object_sighted = self.matrix[i][j]
+                        self.last_visited_object = PheromoneType.TO_ENEMY
+                        self.last_pheromone_distance = -1
+                        self.time_of_last_visit = Globals.global_time_frame
+                        self.heading_towards_objective = False
+                        self.destination = Action.COLONY
+                        self.heading_y = -self.heading_y
+                        self.heading_x = -self.heading_x
+                        self.last_objective_sighted = None
+                        self.is_warning_about_enemy = True
+                        self.last_warning_about_enemy = Globals.global_time_frame
+                        return object_sighted, object_i, object_j
                 if self.matrix[i][j].m_type == MarkerType.COLONY \
                         and self.matrix[i][j].creator == self.colony_id \
                         and self.destination == Action.COLONY:

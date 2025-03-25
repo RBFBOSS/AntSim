@@ -3,11 +3,19 @@ import time
 
 
 class Globals:
+    time_until_worker_signals_enemies_again = 0
+    time_until_colony_stops_making_soldiers = 2000
+    max_workers_per_colony = 75
+    max_soldiers_per_colony = 25
+    worker_production_cost = 2
+    soldier_production_cost = 5
+    worker_maintenance_cost = 1
+    soldier_maintenance_cost = 2
     precise_search_time = 0
     precise_searches = 0
     ants_eat_every_x_turns = 1000
     food_source_counter = 0
-    nr_of_food_sources = 1
+    nr_of_food_sources = 7
     ant_FOVs = []
     speed = 2
     pause_event = threading.Event()
@@ -19,8 +27,8 @@ class Globals:
     ant_FOV = 10
     pheromone_drop_FOV = 5
     exploration_rate = 0.005
-    col1_ants_generated = 50
-    col2_ants_generated = 0
+    col1_ants_generated = 10
+    col2_ants_generated = 10
     delay_rate = 0
     avg_object_sighted_time = 0
     avg_pheromone_drop_time = 0
@@ -82,4 +90,11 @@ class Globals:
         for colony in Globals.colonies:
             if colony.colony_id == colony_id:
                 colony.add_food(amount)
+                return
+
+    @staticmethod
+    def colony_received_warning(colony_id):
+        for colony in Globals.colonies:
+            if colony.colony_id == colony_id:
+                colony.start_making_soldiers()
                 return

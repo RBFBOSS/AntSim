@@ -13,6 +13,7 @@ class Colony:
                  matrix, pheromones, simulation):
         self.simulation = simulation
         self.colony_id = colony_id
+        self.is_making_soldiers = False
         self.ants = []
         self.food_supply = 0
         self.food_supply_size = 1000
@@ -37,7 +38,7 @@ class Colony:
                                            0, Globals.global_time_frame)
         self.pheromones = pheromones
 
-    def produce_ant(self, ant_type) -> None:
+    def produce_ant_init(self, ant_type) -> None:
         heading_x = random.choice([-1, 0, 1])
         if heading_x == 0:
             heading_y = random.choice([-1, 1])
@@ -58,13 +59,51 @@ class Colony:
                                      self.matrix, self.pheromones, self.simulation))
             self.nr_of_soldiers += 1
 
+    def produce_ant(self, ant_type) -> None:
+        self.produce_ant_init(ant_type)
+        if ant_type.lower() == 'worker':
+            if len(self.ants) >= Globals.max_workers_per_colony:
+                return
+            self.food_supply -= Globals.worker_production_cost
+        else:
+            if len(self.ants) >= Globals.max_soldiers_per_colony:
+                return
+            self.food_supply -= Globals.soldier_production_cost
+
+    def delete_ant(self, ant) -> None:
+        self.ants.remove(ant)
+        if isinstance(ant, Worker):
+            self.nr_of_workers -= 1
+        else:
+            self.nr_of_soldiers -= 1
+
     def add_food(self, amount):
         self.food_supply += amount
         if self.food_supply > self.food_supply_size:
             self.food_supply = self.food_supply_size
 
-    def remove_food(self, amount):
-        self.food_supply = max(0, self.food_supply - amount)
+    def remove_food(self):
+        self.food_supply = max(0, self.food_supply - self.nr_of_workers * Globals.worker_maintenance_cost
+                               - self.nr_of_soldiers * Globals.soldier_maintenance_cost)
+
+    def check_for_starvation(self):
+        if (self.food_supply < self.nr_of_workers * Globals.worker_maintenance_cost
+                + self.nr_of_soldiers * Globals.soldier_maintenance_cost):
+            dif = (self.nr_of_workers * Globals.worker_maintenance_cost
+                   + self.nr_of_soldiers * Globals.soldier_maintenance_cost - self.food_supply)
+            for ant in self.ants:
+                if isinstance(ant, Soldier):
+                    self.delete_ant(ant)
+                    dif -= Globals.soldier_maintenance_cost
+                    if dif <= 0:
+                        break
+            if dif > 0:
+                for ant in self.ants:
+                    if isinstance(ant, Worker):
+                        self.delete_ant(ant)
+                        dif -= Globals.worker_maintenance_cost
+                        if dif <= 0:
+                            break
 
     def print_ants(self):
         for ant in self.ants:
@@ -73,11 +112,30 @@ class Colony:
             elif isinstance(ant, Soldier):
                 print("Soldier")
 
+    def start_making_soldiers(self):
+        self.is_making_soldiers = True
+
     def defend(self) -> None:
         # Implement the logic to defend the colony if invaders are found within boundaries
         pass
 
     def update(self):
+        if self.is_making_soldiers:
+            while ((self.nr_of_workers * Globals.worker_maintenance_cost
+                    + self.nr_of_soldiers * Globals.soldier_maintenance_cost) * 2 <=
+                   self.food_supply):
+                cond1 = False
+                if self.nr_of_soldiers < Globals.max_soldiers_per_colony:
+                    self.produce_ant('soldier')
+                else:
+                    cond1 = True
+                cond2 = False
+                if self.nr_of_workers < Globals.max_workers_per_colony:
+                    self.produce_ant('worker')
+                else:
+                    cond2 = True
+                if cond1 and cond2:
+                    break
         for ant in self.ants:
             ant.update()
 
