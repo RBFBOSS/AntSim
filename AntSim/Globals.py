@@ -3,9 +3,11 @@ import time
 
 
 class Globals:
+    precise_search_time = 0
+    precise_searches = 0
     ants_eat_every_x_turns = 1000
     food_source_counter = 0
-    nr_of_food_sources = 7
+    nr_of_food_sources = 1
     ant_FOVs = []
     speed = 2
     pause_event = threading.Event()

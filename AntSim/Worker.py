@@ -1,4 +1,5 @@
 import copy
+import time
 
 from Ant import Ant
 from Action import Action
@@ -75,6 +76,7 @@ class Worker(Ant):
         object_sighted = None
         object_i = -1
         object_j = -1
+        timed = time.perf_counter() * 100000
         # Globals.ant_FOVs.append((i, j))
         if i != self.y or j != self.x:
             if self.matrix[i][j] is not None:
@@ -90,7 +92,7 @@ class Worker(Ant):
                 if self.matrix[i][j].m_type == MarkerType.COLONY \
                         and self.matrix[i][j].creator == self.colony_id \
                         and self.destination == Action.COLONY:
-                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                    object_sighted = self.matrix[i][j]
                     self.heading_towards_objective = True
                     self.last_objective_sighted = object_sighted
                     self.last_objective_sighted_x = j
@@ -100,14 +102,14 @@ class Worker(Ant):
                 if self.matrix[i][j].m_type == MarkerType.FOOD \
                         and not self.is_carrying_food \
                         and self.destination == Action.FOOD:
-                    object_sighted = copy.deepcopy(self.matrix[i][j])
+                    object_sighted = self.matrix[i][j]
                     self.heading_towards_objective = True
                     self.last_objective_sighted = object_sighted
                     self.last_objective_sighted_x = j
                     self.last_objective_sighted_y = i
                     # Globals.resume_pheromone_cleanup()
                     return object_sighted, i, j
-                elif self.matrix[i][j].m_type == MarkerType.PHEROMONE:
+                if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
                     # print('ANT -> ', self.destination)
                     # print('PHEROMONE -> ', self.matrix[i][j].target)
                     if ((self.matrix[i][j].target == PheromoneType.TO_FOOD
@@ -115,7 +117,7 @@ class Worker(Ant):
                             (self.matrix[i][j].target == PheromoneType.TO_COLONY
                              and self.destination == Action.COLONY)):
                         if self.matrix[i][j].creator == self.colony_id:
-                            object_sighted = copy.deepcopy(self.matrix[i][j])
+                            object_sighted = self.matrix[i][j]
                             object_i = i
                             object_j = j
                             self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)

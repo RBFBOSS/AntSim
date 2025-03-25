@@ -49,6 +49,7 @@ class Ant(ABC):
         self.last_objective_sighted = None
         self.last_objective_sighted_x = -1
         self.last_objective_sighted_y = -1
+        self.precise_looks = 0
 
     def update(self):
         # start_time = time.perf_counter() * 100000
@@ -93,6 +94,7 @@ class Ant(ABC):
         if self.pheromone_drop_count >= Globals.pheromone_drop_rate:
             self.drop_pheromone()
             self.pheromone_drop_count = 0
+        # Globals.precise_search_time += self.precise_looks
         # pheromone_drop_time = time.perf_counter() * 100000
         self.move(object_sighted, x, y)
         # move_time = time.perf_counter() * 100000

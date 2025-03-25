@@ -4,7 +4,7 @@ from MarkerType import MarkerType
 
 
 class FoodSource:
-    def __init__(self, food_id, x, y, matrix, size=50):
+    def __init__(self, food_id, x, y, matrix, size=500):
         self.food_id = food_id
         self.size = size
         self.x = x
@@ -22,7 +22,6 @@ class FoodSource:
 
     def remove_food(self, amount):
         self.size = max(0, self.size - amount)
-        print(self.size)
         if self.size == 0:
             above = int(max(0, self.y - 25))
             below = int(min(Globals.height - 1, self.y + 25))

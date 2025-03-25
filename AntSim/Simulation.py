@@ -51,11 +51,13 @@ class Simulation:
                 return pheromone
 
     def update(self):
+        # timer = time.perf_counter() * 100000
         Globals.ant_FOVs = []
         Globals.increment_time_frame()
         # if Globals.global_time_frame >= 10:
         #     print('100 seconds passed')
         self.colony_food_update_count += 1
+        Globals.ant_operations = 0
         if self.colony_food_update_count >= Globals.ants_eat_every_x_turns:
             for colony in Globals.colonies:
                 colony.remove_food(len(colony.ants))
@@ -65,27 +67,32 @@ class Simulation:
         self.update_count += 1
         if len(Globals.food_sources) < Globals.nr_of_food_sources:
             self.add_food_source(random.randint(0, Globals.width), random.randint(0, Globals.height))
+        # entire_time = time.perf_counter() * 100000 - timer
         if self.update_count >= Globals.update_pheromones_count:
             self.delete_old_pheromones()
             # self.delete_old_pheromones()
             self.update_count = 0
+            # print(Globals.ant_operations)
             # print("Ant stats:")
+            # print('Sim time -> ', entire_time)
+            # print('Precise look -> ', Globals.precise_search_time / Globals.ant_operations)
             # print('Object sighted -> ', Globals.avg_object_sighted_time / Globals.ant_operations)
             # print('Move -> ', Globals.avg_move_time / Globals.ant_operations)
             # print('Perform action -> ', Globals.avg_perform_action_time / Globals.ant_operations)
             # print('Placement -> ', Globals.avg_placement_time / Globals.ant_operations)
             # print('Pheromone drop -> ', Globals.avg_pheromone_drop_time / Globals.ant_operations)
+            # print('Entire time -> ', Globals.entire_time / Globals.ant_operations)
             # print('Pheromones sighted -> ', Globals.pheromones_sighted)
             # print('Colonies sighted -> ', Globals.colonies_sighted)
             # print('Ants sighted -> ', Globals.ants_sighted)
             # print('Food sources sighted -> ', Globals.food_sources_sighted)
             # print('Objects sighted -> ', Globals.objects_sighted)
-            # print('Entire time -> ', Globals.entire_time / Globals.ant_operations)
             # Globals.objects_sighted = 0
             # Globals.pheromones_sighted = 0
             # Globals.colonies_sighted = 0
             # Globals.ants_sighted = 0
             # Globals.food_sources_sighted = 0
+            # Globals.precise_search_time = 0
             # print('-----------------------------------')
 
     @staticmethod

@@ -1,3 +1,4 @@
+import time
 from time import sleep
 
 import pygame
@@ -29,6 +30,7 @@ class Graphics:
     def run(self):
         running = True
         while running:
+            # start_timer = time.perf_counter() * 100000
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -38,6 +40,7 @@ class Graphics:
             update()
             if Globals.delay_rate:
                 sleep(Globals.delay_rate)
+            # print("Time taken in Graphics big loop: ", time.perf_counter() * 100000 - start_timer)
         quit()
 
     def draw_sim(self):
