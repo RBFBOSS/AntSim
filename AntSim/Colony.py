@@ -126,7 +126,6 @@ class Colony:
         while ((self.nr_of_workers * Globals.worker_maintenance_cost
                 + self.nr_of_soldiers * Globals.soldier_maintenance_cost) * 2 <=
                 self.food_supply):
-            print('sal')
             cond1 = False
             if self.is_making_soldiers:
                 if self.nr_of_soldiers < Globals.max_soldiers_per_colony:
@@ -140,7 +139,6 @@ class Colony:
                 self.produce_ant('worker')
             else:
                 cond2 = True
-            print(cond1, cond2)
             if cond1 and cond2:
                 break
         for ant in self.ants:

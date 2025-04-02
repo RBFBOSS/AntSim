@@ -6,7 +6,9 @@ from Action import Action
 import random
 
 from Globals import Globals
+from Marker import Marker
 from MarkerType import MarkerType
+from Pheromone import Pheromone
 from PheromoneType import PheromoneType
 
 
@@ -16,7 +18,7 @@ class Soldier(Ant):
                  heading_y: int, state: int,
                  colony_id: int, matrix, pheromones, simulation):
         super().__init__(30, destination,
-                         5, x, y,
+                         3, x, y,
                          heading_x, heading_y,
                          state, colony_id,
                          matrix, pheromones, simulation)
@@ -27,8 +29,6 @@ class Soldier(Ant):
             self.move_to_explore()
         else:
             self.move_towards_objective(object_sighted, x, y)
-
-    # def drop_bloodbath(self):
 
     def perform_action(self):
         if self.destination == Action.TO_ENEMY:

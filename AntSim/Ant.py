@@ -59,17 +59,38 @@ class Ant(ABC):
         self.matrix[self.y][self.x] = None
         Globals.destroy_ant(self.colony_id, self)
 
+    def drop_bloodbath(self):
+        above = max(0, self.y - Globals.bloodbath_range)
+        below = min(Globals.height, self.y + Globals.bloodbath_range + 1)
+        left = max(0, self.x - Globals.bloodbath_range)
+        right = min(Globals.width, self.x + Globals.bloodbath_range + 1)
+
+        count = (Globals.bloodbath_range ** 2) * Globals.bloodbath_percentage
+
+        for _ in range(int(count)):
+            i = random.randint(above, below - 1)
+            j = random.randint(left, right - 1)
+            self.matrix[i][j] = Marker(MarkerType.PHEROMONE,
+                                       PheromoneType.BLOOD,
+                                       self.colony_id,
+                                       Globals.global_time_frame - self.time_of_last_visit,
+                                       Globals.global_time_frame)
+            self.pheromones.append(Pheromone(j, i, self.matrix,
+                                             PheromoneType.BLOOD, self.colony_id,
+                                             Globals.global_time_frame - self.time_of_last_visit,
+                                             Globals.global_time_frame))
+
     def update(self):
         # start_time = time.perf_counter() * 100000
         # if self.matrix[self.last_y][self.last_x] is not None:
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
         #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
-        print('start')
         if self.is_attacked:
             if self.turns_not_attacked >= Globals.attack_cooldown:
                 print('ATTACKED')
                 if self.target_ant.health > 0:
                     self.target_ant.health = max(0, self.target_ant.health - self.attack)
+                    self.target_ant.drop_bloodbath()
                 self.turns_not_attacked = 0
             else:
                 self.turns_not_attacked += 1
@@ -80,7 +101,6 @@ class Ant(ABC):
                 if self.health < self.max_health / 3:
                     self.destination = Action.COLONY
             return
-        print('finish')
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:

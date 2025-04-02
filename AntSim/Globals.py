@@ -2,7 +2,8 @@ import threading
 
 
 class Globals:
-    bloodbath_range = 5
+    bloodbath_range = 25
+    bloodbath_percentage = 0.25
     attack_cooldown = 50
     attack_range = 1
     time_until_worker_signals_enemies_again = 0

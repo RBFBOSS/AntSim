@@ -46,17 +46,18 @@ class Graphics:
         for pheromone in Globals.pheromones:
             if pheromone.target == PheromoneType.TO_COLONY:
                 if pheromone.creator == 0:
-                    pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
+                    pygame.draw.circle(self.screen, (0, 0, 0), (pheromone.x, pheromone.y), 1)
                 elif pheromone.creator == 1:
                     pygame.draw.circle(self.screen, (0, 0, 255), (pheromone.x, pheromone.y), 1)
                 else:
-                    pygame.draw.circle(self.screen, (0, 0, 0), (pheromone.x, pheromone.y), 1)
+                    pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
         for pheromone in Globals.pheromones:
             if pheromone.target == PheromoneType.TO_FOOD:
                 pygame.draw.circle(self.screen, (0, 255, 0), (pheromone.x, pheromone.y), 1)
-        for pheromone in Globals.pheromones:
-            if pheromone.target == PheromoneType.TO_ENEMY:
+            elif pheromone.target == PheromoneType.TO_ENEMY:
                 pygame.draw.circle(self.screen, (0, 0, 0), (pheromone.x, pheromone.y), 1)
+            elif pheromone.target == PheromoneType.BLOOD:
+                pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
         for food_source in Globals.food_sources:
             pygame.draw.circle(self.screen, (0, 0, 0), (food_source.x, food_source.y), 26)  # border
             pygame.draw.circle(self.screen, (0, 255, 0), (food_source.x, food_source.y), 25)
@@ -66,9 +67,9 @@ class Graphics:
         for colony in Globals.colonies:
             colony_color = (0, 0, 0)
             if colony.colony_id == 0:
-                colony_color = (255, 0, 0) # red
+                colony_color = (0, 0, 0)  # black
             elif colony.colony_id == 1:
-                colony_color = (0, 0, 255) # blue
+                colony_color = (0, 0, 255)  # blue
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 31)  # border
             pygame.draw.circle(self.screen, colony_color, (colony.x, colony.y), 30)
             font = pygame.font.SysFont(None, 24)
