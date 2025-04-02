@@ -59,13 +59,9 @@ class Colony:
 
     def produce_ant(self, ant_type) -> None:
         if ant_type.lower() == 'worker':
-            if len(self.ants) >= Globals.max_workers_per_colony:
-                return
             self.produce_ant_init(ant_type)
             self.food_supply -= Globals.worker_production_cost
         else:
-            if len(self.ants) >= Globals.max_soldiers_per_colony:
-                return
             self.produce_ant_init(ant_type)
             self.food_supply -= Globals.soldier_production_cost
 
@@ -125,9 +121,12 @@ class Colony:
         pass
 
     def update(self):
+        self.nr_of_soldiers = sum(isinstance(ant, Soldier) for ant in self.ants)
+        self.nr_of_workers = sum(isinstance(ant, Worker) for ant in self.ants)
         while ((self.nr_of_workers * Globals.worker_maintenance_cost
                 + self.nr_of_soldiers * Globals.soldier_maintenance_cost) * 2 <=
                 self.food_supply):
+            print('sal')
             cond1 = False
             if self.is_making_soldiers:
                 if self.nr_of_soldiers < Globals.max_soldiers_per_colony:
@@ -141,6 +140,7 @@ class Colony:
                 self.produce_ant('worker')
             else:
                 cond2 = True
+            print(cond1, cond2)
             if cond1 and cond2:
                 break
         for ant in self.ants:
