@@ -16,7 +16,7 @@ class Soldier(Ant):
                  heading_y: int, state: int,
                  colony_id: int, matrix, pheromones, simulation):
         super().__init__(30, destination,
-                         10, x, y,
+                         5, x, y,
                          heading_x, heading_y,
                          state, colony_id,
                          matrix, pheromones, simulation)
@@ -28,21 +28,54 @@ class Soldier(Ant):
         else:
             self.move_towards_objective(object_sighted, x, y)
 
+    # def drop_bloodbath(self):
+
     def perform_action(self):
-        if self.destination == Action.ATTACK:
+        if self.destination == Action.TO_ENEMY:
             enemy_in_reach = False
-            for i in range(self.y - Globals.attack_range, self.y + Globals.attack_range):
-                for j in range(self.x - Globals.attack_range, self.x + Globals.attack_range):
+            above = self.y - Globals.ant_FOV
+            above = max(0, above)
+            below = self.y + Globals.ant_FOV + 1
+            below = min(Globals.height, below)
+            left = self.x - Globals.ant_FOV
+            left = max(0, left)
+            right = self.x + Globals.ant_FOV + 1
+            right = min(Globals.width, right)
+            for i in range(above, below):
+                for j in range(left, right):
                     if self.matrix[i][j]:
                         if self.matrix[i][j].m_type == MarkerType.ANT \
                                 and self.matrix[i][j].creator != self.colony_id:
                             enemy_in_reach = True
+                            self.target_ant = self.matrix[i][j].ant_reference
+                            self.target_ant.is_attacked = True
+                            self.is_attacked = True
+                            self.target_ant.target_ant = self
+                            self.matrix[i][j].ant_reference.target_ant = self
+                            self.destination = Action.ATTACK
                             self.last_visited_object = PheromoneType.TO_ENEMY
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
                             self.heading_towards_objective = False
                             self.last_objective_sighted = None
-                            return
+
+        if self.destination == Action.ATTACK:
+            print('ATTACKING')
+            if self.target_ant is None:
+                if self.health < self.max_health / 3:
+                    self.destination = Action.COLONY
+                else:
+                    self.destination = Action.IDLE
+                return
+            if self.target_ant.health > 0:
+                self.target_ant.health = max(0, self.target_ant.health - self.attack)
+            if self.target_ant.health == 0:
+                self.is_attacked = False
+                self.target_ant = None
+                if self.health < self.max_health / 3:
+                    self.destination = Action.COLONY
+                else:
+                    self.destination = Action.IDLE
 
         elif self.destination == Action.COLONY:
             colony_in_reach = False
@@ -58,6 +91,7 @@ class Soldier(Ant):
                                 Globals.colony_received_warning(self.colony_id)
                                 self.is_warning_about_enemy = False
                             colony_in_reach = True
+                            self.health = self.max_health
                             self.last_visited_object = PheromoneType.TO_COLONY
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
@@ -88,21 +122,14 @@ class Soldier(Ant):
                 elif self.matrix[i][j].m_type == MarkerType.FOOD:
                     Globals.food_sources_sighted += 1
                 Globals.objects_sighted += 1
-                if self.matrix[i][j].m_type == MarkerType.ANT and self.matrix[i][j].creator != self.colony_id:
-                    if (Globals.global_time_frame - self.last_warning_about_enemy >
-                            Globals.time_until_worker_signals_enemies_again):
-                        object_sighted = self.matrix[i][j]
-                        self.last_visited_object = PheromoneType.TO_ENEMY
-                        self.last_pheromone_distance = -1
-                        self.time_of_last_visit = Globals.global_time_frame
-                        self.heading_towards_objective = False
-                        self.destination = Action.COLONY
-                        self.heading_y = -self.heading_y
-                        self.heading_x = -self.heading_x
-                        self.last_objective_sighted = None
-                        self.is_warning_about_enemy = True
-                        self.last_warning_about_enemy = Globals.global_time_frame
-                        return object_sighted, object_i, object_j
+                if self.matrix[i][j].m_type == MarkerType.ANT and self.matrix[i][j].creator != self.colony_id \
+                        and self.destination == Action.TO_ENEMY:
+                    object_sighted = self.matrix[i][j]
+                    self.heading_towards_objective = True
+                    self.last_objective_sighted = object_sighted
+                    self.last_objective_sighted_x = j
+                    self.last_objective_sighted_y = i
+                    return object_sighted, object_i, object_j
                 if self.matrix[i][j].m_type == MarkerType.COLONY \
                         and self.matrix[i][j].creator == self.colony_id \
                         and self.destination == Action.COLONY:
@@ -113,28 +140,18 @@ class Soldier(Ant):
                     self.last_objective_sighted_y = i
                     # Globals.resume_pheromone_cleanup()
                     return object_sighted, i, j
-                if self.matrix[i][j].m_type == MarkerType.FOOD \
-                        and not self.is_carrying_food \
-                        and self.destination == Action.FOOD:
-                    object_sighted = self.matrix[i][j]
-                    self.heading_towards_objective = True
-                    self.last_objective_sighted = object_sighted
-                    self.last_objective_sighted_x = j
-                    self.last_objective_sighted_y = i
-                    # Globals.resume_pheromone_cleanup()
-                    return object_sighted, i, j
                 if self.matrix[i][j].m_type == MarkerType.PHEROMONE:
                     # print('ANT -> ', self.destination)
                     # print('PHEROMONE -> ', self.matrix[i][j].target)
-                    if ((self.matrix[i][j].target == PheromoneType.TO_FOOD
-                         and self.destination == Action.FOOD) or
+                    if ((self.matrix[i][j].target == PheromoneType.TO_ENEMY
+                         and self.destination == Action.TO_ENEMY) or
                             (self.matrix[i][j].target == PheromoneType.TO_COLONY
                              and self.destination == Action.COLONY)):
                         if self.matrix[i][j].creator == self.colony_id:
                             object_sighted = self.matrix[i][j]
                             object_i = i
                             object_j = j
-                            self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)
+                            self.last_pheromone_distance = self.matrix[i][j].distance
                             self.heading_towards_objective = True
                             self.last_objective_sighted = object_sighted
                             self.last_objective_sighted_x = j

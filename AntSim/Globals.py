@@ -2,7 +2,9 @@ import threading
 
 
 class Globals:
-    attack_range = 3
+    bloodbath_range = 5
+    attack_cooldown = 50
+    attack_range = 1
     time_until_worker_signals_enemies_again = 0
     time_until_colony_stops_making_soldiers = 2000
     max_workers_per_colony = 75
@@ -97,4 +99,11 @@ class Globals:
         for colony in Globals.colonies:
             if colony.colony_id == colony_id:
                 colony.start_making_soldiers()
+                return
+
+    @staticmethod
+    def destroy_ant(colony_id, ant):
+        for colony in Globals.colonies:
+            if colony.colony_id == colony_id:
+                colony.delete_ant(ant)
                 return

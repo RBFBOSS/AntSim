@@ -62,6 +62,7 @@ class Worker(Ant):
                                 Globals.colony_received_warning(self.colony_id)
                                 self.is_warning_about_enemy = False
                             colony_in_reach = True
+                            self.health = self.max_health
                             self.last_visited_object = PheromoneType.TO_COLONY
                             self.last_pheromone_distance = -1
                             self.time_of_last_visit = Globals.global_time_frame
@@ -138,7 +139,7 @@ class Worker(Ant):
                             object_sighted = self.matrix[i][j]
                             object_i = i
                             object_j = j
-                            self.last_pheromone_distance = copy.deepcopy(self.matrix[i][j].distance)
+                            self.last_pheromone_distance = self.matrix[i][j].distance
                             self.heading_towards_objective = True
                             self.last_objective_sighted = object_sighted
                             self.last_objective_sighted_x = j

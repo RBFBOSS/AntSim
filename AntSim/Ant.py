@@ -21,6 +21,9 @@ class Ant(ABC):
                  matrix,
                  pheromones,
                  simulation):
+        self.is_attacked = False
+        self.turns_not_attacked = 0
+        self.target_ant = None
         self.last_warning_about_enemy = Globals.global_time_frame
         self.is_warning_about_enemy = False
         self.simulation = simulation
@@ -52,11 +55,30 @@ class Ant(ABC):
         self.last_objective_sighted_y = -1
         self.precise_looks = 0
 
+    def destroy(self):
+        self.matrix[self.y][self.x] = None
+        Globals.destroy_ant(self.colony_id, self)
+
     def update(self):
         # start_time = time.perf_counter() * 100000
         # if self.matrix[self.last_y][self.last_x] is not None:
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
         #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
+        if self.is_attacked:
+            print('ATTACKED')
+            if self.turns_not_attacked >= Globals.attack_cooldown:
+                if self.target_ant.health > 0:
+                    self.target_ant.health = max(0, self.target_ant.health - self.attack)
+                self.turns_not_attacked = 0
+            else:
+                self.turns_not_attacked += 1
+            if self.target_ant.health == 0:
+                self.target_ant.destroy()
+                self.is_attacked = False
+                self.target_ant = None
+                if self.health < self.max_health / 3:
+                    self.destination = Action.COLONY
+            return
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:
@@ -108,7 +130,8 @@ class Ant(ABC):
             self.matrix[placement_y][placement_x] = Marker(MarkerType.ANT, None,
                                                            self.colony_id,
                                                            Globals.global_time_frame,
-                                                           Globals.global_time_frame)
+                                                           Globals.global_time_frame,
+                                                           self)
         # end_time = time.perf_counter() * 100000
         # Globals.avg_object_sighted_time += object_sighted_time - start_time
         # Globals.avg_pheromone_drop_time += pheromone_drop_time - object_sighted_time
@@ -117,9 +140,6 @@ class Ant(ABC):
         # Globals.avg_placement_time += end_time - perform_action_time
         # Globals.entire_time += end_time - start_time
         # Globals.ant_operations += 1
-
-    def max_health(self) -> int:
-        return self.max_health
 
     def find_and_clear_precise_spot_for_drop(self, x, y, purpose):
         if purpose == 'ant':

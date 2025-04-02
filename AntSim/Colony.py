@@ -51,21 +51,22 @@ class Colony:
                                     self.matrix, self.pheromones, self.simulation))
             self.nr_of_workers += 1
         else:
-            self.ants.append(Soldier(Action.IDLE, self.x, self.y,
+            self.ants.append(Soldier(Action.TO_ENEMY, self.x, self.y,
                                      heading_x, heading_y,
                                      0, self.colony_id,
                                      self.matrix, self.pheromones, self.simulation))
             self.nr_of_soldiers += 1
 
     def produce_ant(self, ant_type) -> None:
-        self.produce_ant_init(ant_type)
         if ant_type.lower() == 'worker':
             if len(self.ants) >= Globals.max_workers_per_colony:
                 return
+            self.produce_ant_init(ant_type)
             self.food_supply -= Globals.worker_production_cost
         else:
             if len(self.ants) >= Globals.max_soldiers_per_colony:
                 return
+            self.produce_ant_init(ant_type)
             self.food_supply -= Globals.soldier_production_cost
 
     def delete_ant(self, ant) -> None:
