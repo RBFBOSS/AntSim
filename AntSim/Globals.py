@@ -3,7 +3,7 @@ import threading
 
 class Globals:
     bloodbath_range = 5
-    attack_cooldown = 50
+    attack_cooldown = 500
     attack_range = 1
     time_until_worker_signals_enemies_again = 0
     time_until_colony_stops_making_soldiers = 2000

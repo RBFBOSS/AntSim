@@ -70,11 +70,12 @@ class Colony:
             self.food_supply -= Globals.soldier_production_cost
 
     def delete_ant(self, ant) -> None:
-        self.ants.remove(ant)
-        if isinstance(ant, Worker):
-            self.nr_of_workers -= 1
-        else:
-            self.nr_of_soldiers -= 1
+        if ant in self.ants:
+            self.ants.remove(ant)
+            if isinstance(ant, Worker):
+                self.nr_of_workers -= 1
+            else:
+                self.nr_of_soldiers -= 1
 
     def add_food(self, amount):
         self.food_supply += amount

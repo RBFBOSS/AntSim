@@ -64,9 +64,10 @@ class Ant(ABC):
         # if self.matrix[self.last_y][self.last_x] is not None:
         #     if self.matrix[self.last_y][self.last_x].m_type == MarkerType.PHEROMONE:
         #         Ant.delete_pheromone_on_position(self.last_x, self.last_y)
+        print('start')
         if self.is_attacked:
-            print('ATTACKED')
             if self.turns_not_attacked >= Globals.attack_cooldown:
+                print('ATTACKED')
                 if self.target_ant.health > 0:
                     self.target_ant.health = max(0, self.target_ant.health - self.attack)
                 self.turns_not_attacked = 0
@@ -79,6 +80,7 @@ class Ant(ABC):
                 if self.health < self.max_health / 3:
                     self.destination = Action.COLONY
             return
+        print('finish')
         if not self.heading_towards_objective:
             object_sighted, y, x = self.object_sighted()
         else:
