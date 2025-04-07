@@ -2,11 +2,23 @@ import threading
 
 
 class Globals:
-    bloodbath_range = 25
+    nr_of_food_sources = 1
+    width = 700
+    height = 400
+    speed = 2
+    first_colony_color = (0, 255, 255)
+    second_colony_color = (255, 0, 255)
+    bloodbath_range = 13
     bloodbath_percentage = 0.25
     attack_cooldown = 50
-    attack_range = 1
-    time_until_worker_signals_enemies_again = 0
+    pheromone_lifespan = 10
+    ant_FOV = 7
+    attack_range = ant_FOV
+    pheromone_drop_rate = 2
+    update_pheromones_count = 1
+    pheromone_drop_FOV = 5
+    exploration_rate = 0.005
+    time_until_worker_signals_enemies_again = 1000
     time_until_colony_stops_making_soldiers = 2000
     max_workers_per_colony = 75
     max_soldiers_per_colony = 25
@@ -18,18 +30,10 @@ class Globals:
     precise_searches = 0
     ants_eat_every_x_turns = 800
     food_source_counter = 0
-    nr_of_food_sources = 3
     ant_FOVs = []
-    speed = 2
     pause_event = threading.Event()
     waiting_event = threading.Event()
     global_time_frame = 0.0
-    pheromone_drop_rate = 2
-    update_pheromones_count = 1
-    pheromone_lifespan = 6
-    ant_FOV = 10
-    pheromone_drop_FOV = 5
-    exploration_rate = 0.005
     col1_ants_generated = 10
     col2_ants_generated = 10
     delay_rate = 0
@@ -52,8 +56,6 @@ class Globals:
     colonies = []
     food_sources = []
     pheromones = []
-    width = 1300
-    height = 700
     matrix = []
     how_many_pheromone_drops_to_check = 10
     how_long_until_ant_forgets_last_pheromone = 5

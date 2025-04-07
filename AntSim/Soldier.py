@@ -62,7 +62,7 @@ class Soldier(Ant):
         if self.destination == Action.ATTACK:
             print('ATTACKING')
             if self.target_ant is None:
-                if self.health < self.max_health / 3:
+                if self.health < 3:
                     self.destination = Action.COLONY
                 else:
                     self.destination = Action.IDLE

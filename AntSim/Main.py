@@ -3,8 +3,11 @@ from Graphics import Graphics
 from Simulation import Simulation
 
 sim = Simulation()
-sim.add_colony(100, 400)
-sim.add_colony(Globals.width - 100, 400)
+sim.add_colony(100, 200)
+sim.add_colony(Globals.width - 100, 200)
+sim.add_food_source(Globals.width / 2, 100)
+sim.add_food_source(Globals.width / 2, 200)
+sim.add_food_source(Globals.width / 2, 300)
 col = sim.get_colony(0)
 for _ in range(Globals.col1_ants_generated):
     col.produce_ant_init('worker')

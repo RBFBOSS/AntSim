@@ -24,7 +24,7 @@ class Ant(ABC):
         self.is_attacked = False
         self.turns_not_attacked = 0
         self.target_ant = None
-        self.last_warning_about_enemy = Globals.global_time_frame
+        self.last_warning_about_enemy = -Globals.time_until_worker_signals_enemies_again
         self.is_warning_about_enemy = False
         self.simulation = simulation
         self.aux = 0

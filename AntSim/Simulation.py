@@ -59,7 +59,7 @@ class Simulation:
         Globals.ant_operations = 0
         if self.colony_food_update_count >= Globals.ants_eat_every_x_turns:
             for colony in Globals.colonies:
-                colony.add_food(10 * Globals.worker_maintenance_cost)
+                colony.add_food(20 * Globals.worker_maintenance_cost)
                 colony.remove_food()
             self.colony_food_update_count = 0
         for colony in Globals.colonies:
