@@ -2,19 +2,21 @@ import threading
 
 
 class Globals:
-    nr_of_food_sources = 1
+    nr_of_food_sources = 3
     width = 700
     height = 400
-    speed = 2
+    speed = 1
     first_colony_color = (0, 255, 255)
     second_colony_color = (255, 0, 255)
     bloodbath_range = 13
     bloodbath_percentage = 0.25
     attack_cooldown = 50
-    pheromone_lifespan = 10
+    pheromone_lifespan = 6
     ant_FOV = 7
+    col1_ants_generated = 30
+    col2_ants_generated = 30
     attack_range = ant_FOV
-    pheromone_drop_rate = 2
+    pheromone_drop_rate = 3
     update_pheromones_count = 1
     pheromone_drop_FOV = 5
     exploration_rate = 0.005
@@ -34,8 +36,6 @@ class Globals:
     pause_event = threading.Event()
     waiting_event = threading.Event()
     global_time_frame = 0.0
-    col1_ants_generated = 10
-    col2_ants_generated = 10
     delay_rate = 0
     avg_object_sighted_time = 0
     avg_pheromone_drop_time = 0

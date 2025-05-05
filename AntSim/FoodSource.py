@@ -4,7 +4,7 @@ from MarkerType import MarkerType
 
 
 class FoodSource:
-    def __init__(self, food_id, x, y, matrix, size=600):
+    def __init__(self, food_id, x, y, matrix, size=200):
         self.food_id = food_id
         self.size = size
         self.x = x
