@@ -32,12 +32,14 @@ class Graphics:
         self.fig, self.ax = plt.subplots()
         self.colony1_population, = self.ax.plot([], [], label='Colony 1 Population', color='#00FFFF')  # Cyan
         self.colony2_population, = self.ax.plot([], [], label='Colony 2 Population', color='#FF00FF')  # Magenta
-        self.ax.set_xlim(0, 100)
-        self.ax.set_ylim(0, 100)
+        self.colony3_population, = self.ax.plot([], [], label='Colony 3 Population', color='#FFA500')  # Orange
+        self.ax.set_xlim(0, 109)
+        self.ax.set_ylim(0, 109)
         self.ax.legend()
         self.time_data = []
         self.colony1_data = []
         self.colony2_data = []
+        self.colony3_data = []
 
         self.ani = FuncAnimation(self.fig, self.update_graph, interval=1000, cache_frame_data=False)
         plt.show()
@@ -48,9 +50,12 @@ class Graphics:
             sum(colony.nr_of_workers + colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 0))
         self.colony2_data.append(
             sum(colony.nr_of_workers + colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 1))
+        self.colony3_data.append(
+            sum(colony.nr_of_workers + colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 2))
 
         self.colony1_population.set_data(self.time_data, self.colony1_data)
         self.colony2_population.set_data(self.time_data, self.colony2_data)
+        self.colony3_population.set_data(self.time_data, self.colony3_data)
 
         self.ax.set_xlim(0, max(100, Globals.global_time_frame))
         self.ax.set_ylim(0, max(100, max(self.colony1_data + self.colony2_data)))
@@ -80,6 +85,8 @@ class Graphics:
                     pygame.draw.circle(self.screen, Globals.first_colony_color, (pheromone.x, pheromone.y), 1)
                 elif pheromone.creator == 1:
                     pygame.draw.circle(self.screen, Globals.second_colony_color, (pheromone.x, pheromone.y), 1)
+                elif pheromone.creator == 2:
+                    pygame.draw.circle(self.screen, Globals.third_colony_color, (pheromone.x, pheromone.y), 1)
                 else:
                     pygame.draw.circle(self.screen, (255, 0, 0), (pheromone.x, pheromone.y), 1)
         for pheromone in Globals.pheromones:
@@ -101,6 +108,8 @@ class Graphics:
                 colony_color = Globals.first_colony_color
             elif colony.colony_id == 1:
                 colony_color = Globals.second_colony_color
+            elif colony.colony_id == 2:
+                colony_color = Globals.third_colony_color
             pygame.draw.circle(self.screen, (0, 0, 0), (colony.x, colony.y), 21)  # border
             pygame.draw.circle(self.screen, colony_color, (colony.x, colony.y), 20)
             font = pygame.font.SysFont(None, 24)
@@ -129,18 +138,24 @@ class Graphics:
                                        (ant.x + 4 * ant.heading_x, ant.y + 4 * ant.heading_y), 2)
 
             font = pygame.font.SysFont(None, 24)
-            red_workers = sum(colony.nr_of_workers for colony in Globals.colonies if colony.colony_id == 0)
-            red_soldiers = sum(colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 0)
-            blue_workers = sum(colony.nr_of_workers for colony in Globals.colonies if colony.colony_id == 1)
-            blue_soldiers = sum(colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 1)
-            red_text_surface1 = font.render(f"Red Workers: {red_workers}", True, (0, 0, 0))
-            red_text_surface2 = font.render(f"Red Soldiers: {red_soldiers}", True, (0, 0, 0))
-            blue_text_surface1 = font.render(f"Blue Workers: {blue_workers}", True, (0, 0, 0))
-            blue_text_surface2 = font.render(f"Blue Soldiers: {blue_soldiers}", True, (0, 0, 0))
-            self.screen.blit(red_text_surface1, (50, 25))
-            self.screen.blit(red_text_surface2, (50, 50))
-            self.screen.blit(blue_text_surface1, (Globals.width - blue_text_surface1.get_width() - 50, 25))
-            self.screen.blit(blue_text_surface2, (Globals.width - blue_text_surface2.get_width() - 50, 50))
+            col_1_workers = sum(colony.nr_of_workers for colony in Globals.colonies if colony.colony_id == 0)
+            col_1_soldiers = sum(colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 0)
+            col_3_workers = sum(colony.nr_of_workers for colony in Globals.colonies if colony.colony_id == 1)
+            col_3_soldiers = sum(colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 1)
+            col_2_workers = sum(colony.nr_of_workers for colony in Globals.colonies if colony.colony_id == 2)
+            col_2_soldiers = sum(colony.nr_of_soldiers for colony in Globals.colonies if colony.colony_id == 2)
+            col_1_text_surface1 = font.render(f"Colony 1 Workers: {col_1_workers}", True, (0, 0, 0))
+            col_1_text_surface2 = font.render(f"Colony 1 Soldiers: {col_1_soldiers}", True, (0, 0, 0))
+            col_2_text_surface1 = font.render(f"Colony 2 Workers: {col_2_workers}", True, (0, 0, 0))
+            col_2_text_surface2 = font.render(f"Colony 2 Soldiers: {col_2_soldiers}", True, (0, 0, 0))
+            col_3_text_surface1 = font.render(f"Colony 3 Workers: {col_3_workers}", True, (0, 0, 0))
+            col_3_text_surface2 = font.render(f"Colony 3 Soldiers: {col_3_soldiers}", True, (0, 0, 0))
+            self.screen.blit(col_1_text_surface1, (50, 25))
+            self.screen.blit(col_1_text_surface2, (50, 50))
+            self.screen.blit(col_2_text_surface1, ((Globals.width - col_3_text_surface1.get_width()) // 2, 25))
+            self.screen.blit(col_2_text_surface2, ((Globals.width - col_3_text_surface2.get_width()) // 2, 50))
+            self.screen.blit(col_3_text_surface1, (Globals.width - col_3_text_surface1.get_width() - 50, 25))
+            self.screen.blit(col_3_text_surface2, (Globals.width - col_3_text_surface2.get_width() - 50, 50))
 
     def clear(self):
         self.screen.fill((255, 255, 255))

@@ -3,15 +3,19 @@ from Graphics import Graphics
 from Simulation import Simulation
 
 sim = Simulation()
-sim.add_colony(100, 200)
-sim.add_colony(Globals.width - 100, 200)
-# sim.add_food_source(Globals.width / 2, 100)
-# sim.add_food_source(Globals.width / 2, 200)
-# sim.add_food_source(Globals.width / 2, 300)
+sim.add_colony(200, 200)
+sim.add_colony(Globals.width - 100, 100)
+sim.add_colony(Globals.width - 100, 300)
+# sim.add_food_source(Globals.width - 100, 100)
+# sim.add_food_source(Globals.width - 100, 300)
+# sim.add_food_source(Globals.width - 100, 400)
 col = sim.get_colony(0)
 for _ in range(Globals.col1_ants_generated):
     col.produce_ant_init('worker')
 col1 = sim.get_colony(1)
+for _ in range(Globals.col2_ants_generated):
+    col1.produce_ant_init('worker')
+col1 = sim.get_colony(2)
 for _ in range(Globals.col2_ants_generated):
     col1.produce_ant_init('worker')
 # sim.add_food_source(50, 50)

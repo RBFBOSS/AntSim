@@ -8,6 +8,7 @@ class Globals:
     speed = 1
     first_colony_color = (0, 255, 255)
     second_colony_color = (255, 0, 255)
+    third_colony_color = (255, 165, 0)
     bloodbath_range = 13
     bloodbath_percentage = 0.25
     attack_cooldown = 50
