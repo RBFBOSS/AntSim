@@ -2,9 +2,9 @@ import threading
 
 
 class Globals:
-    nr_of_food_sources = 3
+    nr_of_food_sources = 1
     width = 700
-    height = 400
+    height = 500
     speed = 1
     first_colony_color = (0, 255, 255)
     second_colony_color = (255, 0, 255)
@@ -14,7 +14,7 @@ class Globals:
     attack_cooldown = 50
     pheromone_lifespan = 6
     ant_FOV = 7
-    col1_ants_generated = 30
+    col1_ants_generated = 40
     col2_ants_generated = 30
     attack_range = ant_FOV
     pheromone_drop_rate = 3
